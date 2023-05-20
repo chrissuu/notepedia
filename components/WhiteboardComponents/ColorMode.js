@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import {ThemeContext, ThemeProvider, THEMES} from '../ThemeContext';
 
 //handles light / dark mode
-const RotateColor = ({rotateColor}) => {
+const RotateColor = () => {
+    const {rotateTheme} = useContext(ThemeContext);
     const handleButtonPress = () => {
       alert('Rotating color...');
-      rotateColor();
+      rotateTheme();
     };
   
     return (
