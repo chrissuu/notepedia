@@ -8,7 +8,7 @@ const Whiteboard = () => {
   const { theme } = useContext(ThemeContext);
 
   return (
-    <View style={{ backgroundColor: THEMES[theme]?.backgroundColor }}>
+    <View style={{ flex: THEMES[theme]?.flex, backgroundColor: THEMES[theme]?.backgroundColor }}>
       <Text style={{ color: THEMES[theme]?.textColor }}> test</Text>
     </View>
   );

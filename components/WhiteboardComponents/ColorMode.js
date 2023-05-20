@@ -5,13 +5,14 @@ import {ThemeContext, ThemeProvider, THEMES} from '../ThemeContext';
 //handles light / dark mode
 const RotateColor = () => {
     const {rotateTheme} = useContext(ThemeContext);
+    const { theme } = useContext(ThemeContext);
     const handleButtonPress = () => {
       alert('Rotating color...');
       rotateTheme();
     };
   
     return (
-      <View style = {buttonStyles.buttonContainer}>
+      <View style = {{backgroundColor: THEMES[theme].backgroundColor}}>
         <TouchableOpacity style = {buttonStyles.button} onPress = {handleButtonPress}>
           <Text style= {buttonStyles.buttonText}>Rotate Color</Text>
         </TouchableOpacity>
