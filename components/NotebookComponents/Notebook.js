@@ -1,44 +1,49 @@
+import React, { useState, useContext } from "react";
 import { Button, View, StyleSheet } from "react-native";
-import { createDrawerNavigation } from "@react-navigation/drawer";
+import { createDrawerNavigator } from "@react-navigation/drawer";
 import { NavigationContainer } from "@react-navigation/native";
-function Notebook({ navigation, notebookName, uniqueID }) {
+import { ThemeContext, THEMES } from "../ThemeContext";
+import Whiteboard from '../WhiteboardComponents/Whiteboard'
+function NotebookScreen({ navigation, route }) {
+  
+  const { notebookName, uniqueID, styles } = route.params;
+
   return (
-    <View style={styles.notebookContainer}>
-      <Button
-        onPress={() => navigation.navigate(`${uniqueID}`)}
-        title="Go to notifications"
-      />
-    </View>
+    <Whiteboard />
   );
 }
 const notebooks = [{ name: "Physics" }, { name: "Chem" }];
 
-const Drawer = createDrawerNavigation();
+const Drawer = createDrawerNavigator();
 
 const NotebookDrawer = () => {
+  const { theme } = useContext(ThemeContext);
+
+  const styles = StyleSheet.create({
+    notebookContainer: {
+      flex: THEMES[theme].flex,
+      backgroundColor: THEMES[theme].backgroundColor,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+  });
+
   return (
-    <NavigationContainer>
-      <Drawer.Navigator>
-        {notebooks.map((notebook, index) => (
-          <Drawer.Screen
-            key={index}
-            name={notebook.name}
-            component={() => (
-              <Notebook notebookName={notebook.name} uniqueID={index} />
-            )}
-          />
-        ))}
-      </Drawer.Navigator>
-    </NavigationContainer>
+    <Drawer.Navigator>
+      {notebooks.map((notebook, index) => (
+        <Drawer.Screen
+          key={index}
+          name={notebook.name}
+          component={NotebookScreen}
+          initialParams={{
+            notebookName: notebook.name,
+            uniqueID: index,
+            styles: styles,
+          }}
+        />
+      ))}
+    </Drawer.Navigator>
   );
 };
-
-const styles = StyleSheet.create({
-  notebookContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
 
 export default NotebookDrawer;
