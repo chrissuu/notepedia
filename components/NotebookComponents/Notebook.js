@@ -1,23 +1,28 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useCallback } from "react";
 import { Button, View, StyleSheet } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { NavigationContainer } from "@react-navigation/native";
 import { ThemeContext, THEMES } from "../ThemeContext";
 import Whiteboard from '../WhiteboardComponents/Whiteboard'
+
 function NotebookScreen({ navigation, route }) {
-  
   const { notebookName, uniqueID, styles } = route.params;
 
   return (
     <Whiteboard />
   );
 }
-const notebooks = [{ name: "Physics" }, { name: "Chem" }];
+
+const notebooks = [
+  { name: "Physics", uniqueID: 0 },
+  { name: "Chemistry", uniqueID: 1 },
+];
 
 const Drawer = createDrawerNavigator();
 
 const NotebookDrawer = () => {
   const { theme } = useContext(ThemeContext);
+  const [notebooksState, setNotebooksState] = useState(notebooks);
 
   const styles = StyleSheet.create({
     notebookContainer: {
@@ -28,17 +33,29 @@ const NotebookDrawer = () => {
     },
   });
 
+  const handleDrawerLongPress = useCallback((index) => {
+    const newNotebooks = [...notebooksState];
+    const newNotebookName = prompt("Enter a new name for the drawer:");
+    if (newNotebookName) {
+      newNotebooks[index].name = newNotebookName;
+      setNotebooksState(newNotebooks);
+    }
+  }, [notebooksState]);
+
   return (
     <Drawer.Navigator>
-      {notebooks.map((notebook, index) => (
+      {notebooksState.map((notebook, index) => (
         <Drawer.Screen
           key={index}
           name={notebook.name}
           component={NotebookScreen}
           initialParams={{
             notebookName: notebook.name,
-            uniqueID: index,
+            uniqueID: notebook.uniqueID,
             styles: styles,
+          }}
+          listeners={{
+            longPress: () => handleDrawerLongPress(index),
           }}
         />
       ))}
