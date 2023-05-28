@@ -6,8 +6,12 @@ import HomeScreen from '../components/HomeScreenComponents/HomeScreen';
 import Whiteboard from '../components/WhiteboardComponents/Whiteboard';
 
 
+import * as ScreenOrientation from 'expo-screen-orientation';
+
+
 const Stack = createNativeStackNavigator();
 export default function AppNavigator() {
+  
   return (
       <Whiteboard/> 
     );
