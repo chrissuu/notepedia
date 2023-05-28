@@ -1,27 +1,29 @@
-import React, { useRef, useState, useContext, useCallback} from "react";
+import React, { useRef, useState, useCallback, useEffect, useMemo} from "react";
 import { useWindowDimensions, LayoutChangeEvent, View, SafeAreaView } from "react-native";
 
-import { Skia, Canvas, TouchInfo, ExtendedTouchInfo, useDrawCallback, useTouchHandler, SkiaView, Path } from "@shopify/react-native-skia";
+import { Skia, Canvas, TouchInfo, ExtendedTouchInfo, useDrawCallback, useTouchHandler, SkiaView, Path, SkCanvas, PaintStyle } from "@shopify/react-native-skia";
 import useWhiteboardStore, { CurrentPath } from "./WhiteboardStore"; 
 
 //white,dark purple
 
 const Whiteboard = () => {
     const touchState = useRef(false); 
-    const canvas = useRef();
-    const currentPath = useRef();
+    const canvas = useRef<SkCanvas>();
+    const currentPath = useRef<CurrentPath | null>();
     const {width} = useWindowDimensions();
     const completedPaths = useWhiteboardStore(state => state.completedPaths);
-    const setCompletedPaths = useWhiteboardStore(state => state.setCompletedPaths)
-    const stroke = useWhiteboardStore(state => state.stroke)
+    const setCompletedPaths = useWhiteboardStore(state => state.setCompletedPaths);
+    const stroke = useWhiteboardStore(state => state.stroke);
     const [canvasHeight, setCanvasHeight] = useState(400);
 
     const onDrawingActive = useCallback((TouchInfo: ExtendedTouchInfo) => {
         const {x, y} = TouchInfo;
         if (!currentPath.current) return;
         if (touchState.current){
-            currentPath.lineTo(x, y);
-            canvas.current.drawPath(currentPath.current.Path, currentPath.current.paint);
+            currentPath.current.path.lineTo(x, y);
+            if (currentPath.current){
+                canvas.current.drawPath(currentPath.current.path, currentPath.current.paint);
+            }
         }
 
     }, []);
@@ -38,42 +40,73 @@ const Whiteboard = () => {
         currentPath.current.path.moveTo(x, y);
 
         if (currentPath.current){
-            canvas.current.drawPath(currentPath.current.path, currentPath.current.paint);
+            canvas.current?.drawPath(currentPath.current.path, currentPath.current.paint);
         }
 
 
     }, [stroke]);
 
-    const onDrawingFinished = useCallback(() => {
-        updatePaths();
-
-        touchState.current = false;
-        currentPath.current = null;
-
-    }, [completedPaths.length]);
 
     const onDraw = useDrawCallback((_canvas, info) => {
         touchHandler(info.touches);
-        
+
+        if (currentPath.current) {
+            canvas.current?.drawPath(
+              currentPath.current.path,
+              currentPath.current.paint,
+            );
+          }
+      
+          if (!canvas.current) {
+            useWhiteboardStore.getState().setCanvasInfo({
+              width: info.width,
+              height: info.height,
+            });
+            canvas.current = _canvas;
+          }
         
 
     }, []);
 
-    const updatePaths = () => {
-        let updatedPaths = [...completedPaths];
+    const onDrawingFinished = useCallback(() => {
+        updatePaths();
 
-        updatedPaths.push({
+        currentPath.current = null;
+        touchState.current = false;
+
+    }, [completedPaths.length]);  
+
+    const updatePaths = () => {
+        if (!currentPath.current) return;
+
+        setCompletedPaths({
             path: currentPath.current.path.copy(), 
             paint: currentPath.current.paint.copy(), 
-            color: currentPath.current.color.copy(),
-        })
+            color: useWhiteboardStore.getState().color,
+        });
 
-        setCompletedPaths(updatedPaths);
-    };  
+        console.log(currentPath.current.paint.getStrokeWidth());
+
+        // let updatedPaths = [...completedPaths]; 
+         
+        // updatedPaths.push({
+        //     path: currentPath.current.path.copy(), 
+        //     paint: currentPath.current.paint.copy(), 
+        //     color: useWhiteboardStore.getState().color,
+        // });
+        // // history.push(currentPath.current);
+
+        // console.log("updated paths" + updatedPaths.length);
+
+        // setCompletedPaths(updatedPaths);
+
+        // console.log("completed paths" + completedPaths.length);
+
+    };   
 
     const touchHandler = useTouchHandler({
         onActive: onDrawingActive, 
-        onStart: onDrawingStart, 
+        onStart: onDrawingStart,   
         onEnd: onDrawingFinished,
     });
 
@@ -83,17 +116,19 @@ const Whiteboard = () => {
 
     return (
         <SafeAreaView style = {{flex: 1}}>
-            <View style = {{width: width - 24, flex: 1, alignItems: 'center'}}>
-                <View onLayout = {onLayout} style = {{width: width - 24, flexgrow: 1}}>
+            <View style = {{flex: 1, alignItems: 'center'}}>
+                <View onLayout = {onLayout} style = {{width: width - 24, flex: 1, elevation: 1}}>
                     <SkiaView onDraw = {onDraw} style = {{height: canvasHeight, width: width - 24, zIndex: 10}}/>
                     <Canvas style = {{height: canvasHeight, width: width - 24, position: 'absolute'}} >
                         {completedPaths.map(path => (
-                            <Path path = {path.path} paint={path.paint}/>
+                            <Path path = {path.path} key = {path.path.toSVGString()} 
+                            //@ts-ignore
+                            paint={path.paint} style = 'stroke' strokeWidth={path.paint.getStrokeWidth()}/>
                         ))}
 
-                    </Canvas>
-
-                    
+                    </Canvas>  
+   
+ 
                 </View>
 
 

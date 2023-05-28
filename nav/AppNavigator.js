@@ -9,25 +9,6 @@ import Whiteboard from '../components/WhiteboardComponents/Whiteboard';
 const Stack = createNativeStackNavigator();
 export default function AppNavigator() {
   return (
-    /*
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
-    */
-    <NavigationContainer>
-      {/* <ThemeProvider >
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} />
-
-      </Stack.Navigator>
-      
-     
-    </ThemeProvider> */}
-
-      <Whiteboard/>
-    </NavigationContainer>
-    
+      <Whiteboard/> 
     );
 }

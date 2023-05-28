@@ -1,19 +1,19 @@
-import { DrawingInfo, Paint, SkPaint, Path, SkPath, Skia } from '@shopify/react-native-skia';
-import { create} from 'zustand';
+import { DrawingInfo, SkPaint, SkPath, Skia, PaintStyle, StrokeCap, StrokeJoin } from '@shopify/react-native-skia';
+import { create } from 'zustand';
 
 
 export type CurrentPath = {
     path: SkPath;
     paint: SkPaint;
-    color: string;
+    color?: string;
 }
 
 interface WhiteboardStore {
     completedPaths: CurrentPath[];
-    setCompletedPaths: (completedPaths: CurrentPath[]) => void;
+    setCompletedPaths: (CPath: CurrentPath) => void;
+    stroke: SkPaint;
     strokeWidth: number;
     color: string;
-    stroke: SkPaint;
     setStrokeWidth: (strokeWidth: number) => void;
     setColor: (color: string) => void;
     setStroke: (stroke: SkPaint) => void;
@@ -28,21 +28,33 @@ interface WhiteboardStore {
 const getPaint = (strokeWidth: number, color: string) =>{
     const paint = Skia.Paint();
     paint.setStrokeWidth(strokeWidth);
+    paint.setStrokeMiter(5);
+    paint.setStyle(PaintStyle.Stroke);
+    paint.setStrokeCap(StrokeCap.Round);
+    paint.setStrokeJoin(StrokeJoin.Round);
+    paint.setAntiAlias(true);
+
     const paintCopy = paint.copy();
     paintCopy.setColor(Skia.Color(color));
-    console.log(paintCopy);
+
+    // console.log(paintCopy);
     return paintCopy;
 };
 
 
 const useWhiteboardStore = create<WhiteboardStore>((set, get) => ({
     completedPaths: [], 
-    setCompletedPaths: completedPaths => {
-        set({completedPaths});
+    setCompletedPaths: Path => {
+        // console.log(completedPaths.length);
+        set((state) => ({
+            completedPaths: [
+                ...state.completedPaths, Path
+            ]
+        }));
     },
-    strokeWidth: 2, 
+    strokeWidth: 3,    
     color: 'black', 
-    stroke: getPaint(2, 'black'),
+    stroke: getPaint(3, 'black'), 
     setStrokeWidth: strokeWidth => {
         set({strokeWidth});
     },
