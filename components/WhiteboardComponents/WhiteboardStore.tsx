@@ -10,7 +10,9 @@ export type CurrentPath = {
 
 interface WhiteboardStore {
     completedPaths: CurrentPath[];
-    setCompletedPaths: (CPath: CurrentPath) => void;
+    addPath: (CPath: CurrentPath) => void;
+    removePath: () => void;
+    clearPaths: () => void;
     stroke: SkPaint;
     strokeWidth: number;
     color: string;
@@ -44,12 +46,27 @@ const getPaint = (strokeWidth: number, color: string) =>{
 
 const useWhiteboardStore = create<WhiteboardStore>((set, get) => ({
     completedPaths: [], 
-    setCompletedPaths: Path => {
+    addPath: Path => {
         // console.log(completedPaths.length);
         set((state) => ({
             completedPaths: [
                 ...state.completedPaths, Path
             ]
+        }));
+    },
+    removePath: () => {
+        set((state) => ({
+            completedPaths: [...state.completedPaths.slice(0, -1)]
+        }));
+        // set((state) => ({
+        //     completedPaths: state.completedPaths.filter((_, i) => {
+        //         i == -1
+        //     })
+        // }));
+    },
+    clearPaths: () => {
+        set((state) => ({
+            completedPaths: [],
         }));
     },
     strokeWidth: 3,    

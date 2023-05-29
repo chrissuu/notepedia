@@ -1,8 +1,10 @@
 import React, { useRef, useState, useCallback, useEffect, useMemo} from "react";
 import { useWindowDimensions, LayoutChangeEvent, View, SafeAreaView } from "react-native";
 
-import { Skia, Canvas, TouchInfo, ExtendedTouchInfo, useDrawCallback, useTouchHandler, SkiaView, Path, SkCanvas, PaintStyle } from "@shopify/react-native-skia";
+import { Skia, Canvas, TouchInfo, ExtendedTouchInfo, useDrawCallback, useTouchHandler, SkiaView, Path, SkCanvas, PaintStyle, StrokeJoin } from "@shopify/react-native-skia";
 import useWhiteboardStore, { CurrentPath } from "./WhiteboardStore"; 
+import history from "./history";
+import Header from "./Header";
 
 //white,dark purple
 
@@ -12,7 +14,7 @@ const Whiteboard = () => {
     const currentPath = useRef<CurrentPath | null>();
     const {width} = useWindowDimensions();
     const completedPaths = useWhiteboardStore(state => state.completedPaths);
-    const setCompletedPaths = useWhiteboardStore(state => state.setCompletedPaths);
+    const addPath = useWhiteboardStore(state => state.addPath);
     const stroke = useWhiteboardStore(state => state.stroke);
     const [canvasHeight, setCanvasHeight] = useState(400);
 
@@ -79,13 +81,15 @@ const Whiteboard = () => {
     const updatePaths = () => {
         if (!currentPath.current) return;
 
-        setCompletedPaths({
+        history.push(currentPath.current);
+
+        addPath({
             path: currentPath.current.path.copy(), 
             paint: currentPath.current.paint.copy(), 
             color: useWhiteboardStore.getState().color,
         });
 
-        console.log(currentPath.current.paint.getStrokeWidth());
+        // console.log(currentPath.current.paint.getStrokeWidth());
 
         // let updatedPaths = [...completedPaths]; 
          
@@ -116,14 +120,17 @@ const Whiteboard = () => {
 
     return (
         <SafeAreaView style = {{flex: 1}}>
-            <View style = {{flex: 1, alignItems: 'center'}}>
-                <View onLayout = {onLayout} style = {{width: width - 24, flex: 1, elevation: 1}}>
+            <View style = {{backgroundColor: '#45f5f5', flex: 1, alignItems: 'center'}}>
+
+                <Header/>
+
+                <View onLayout = {onLayout} style = {{width: width - 24, flexGrow: 4, elevation: 1}}>
                     <SkiaView onDraw = {onDraw} style = {{height: canvasHeight, width: width - 24, zIndex: 10}}/>
                     <Canvas style = {{height: canvasHeight, width: width - 24, position: 'absolute'}} >
                         {completedPaths.map(path => (
-                            <Path path = {path.path} key = {path.path.toSVGString()} 
+                            <Path path = {path.path} key = {path.path.toSVGString()}
                             //@ts-ignore
-                            paint={path.paint} style = 'stroke' strokeWidth={path.paint.getStrokeWidth()}/>
+                            paint={path.paint} style = 'stroke' strokeWidth={path.paint.getStrokeWidth()} strokeJoin = 'round'/>
                         ))}
 
                     </Canvas>  
