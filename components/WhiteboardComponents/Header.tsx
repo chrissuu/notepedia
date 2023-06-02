@@ -6,11 +6,13 @@ import history from './history'
 import useWhiteboardStore from "./WhiteboardStore";
 
 
+// basically the undo redo resset button as of 6/2/23
 const Header = () => {
 
     const reset = () => {
-        useWhiteboardStore.getState().clearPaths();
         history.clear();
+        useWhiteboardStore.getState().setPaths([]);
+        //reset canvas 
     }
 
     const undo = () => {
@@ -20,6 +22,8 @@ const Header = () => {
     const redo = () => {
         history.redo();
     }
+
+
 
 
 

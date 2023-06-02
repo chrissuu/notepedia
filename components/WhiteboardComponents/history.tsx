@@ -1,18 +1,22 @@
-import useWhiteboardStore, { CurrentPath } from "./WhiteboardStore";
+import { Path } from "./Whiteboard";
+import useWhiteboardStore from "./WhiteboardStore";
 
 const history: {
-    undoArr: CurrentPath[];
-    redoArr: CurrentPath[];
+    undoArr: Path[];
+    redoArr: Path[];
+
   } = {
     undoArr: [],
     redoArr: [],
+
   };
 
 const undo = () => {
     if (history.undoArr.length == 0) return;
     let lastPath = history.undoArr.pop();
     history.redoArr.push(lastPath);
-    useWhiteboardStore.getState().removePath();
+    useWhiteboardStore.getState().setPaths([...history.undoArr]);
+    
 
 };
 
@@ -20,7 +24,7 @@ const redo = () => {
     if (history.redoArr.length == 0) return;
     let lastPath = history.redoArr.pop();
     history.undoArr.push(lastPath);
-    useWhiteboardStore.getState().addPath(lastPath);
+    useWhiteboardStore.getState().setPaths([...history.undoArr]);
 
 };
 
@@ -28,11 +32,13 @@ const redo = () => {
 const clear = () => {
     history.undoArr = [];
     history.redoArr = [];
+    
 };
 
-const push = (path: CurrentPath) => {
+const push = (path: Path) => {
     history.undoArr.push(path);
-    console.log(history.undoArr.length);
 };
+
+
 
 export default {history, undo, redo, clear, push};

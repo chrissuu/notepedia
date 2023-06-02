@@ -1,142 +1,117 @@
 import React, { useRef, useState, useCallback, useEffect, useMemo} from "react";
 import { useWindowDimensions, LayoutChangeEvent, View, SafeAreaView } from "react-native";
 
-import { Skia, Canvas, TouchInfo, ExtendedTouchInfo, useDrawCallback, useTouchHandler, SkiaView, Path, SkCanvas, PaintStyle, StrokeJoin } from "@shopify/react-native-skia";
-import useWhiteboardStore, { CurrentPath } from "./WhiteboardStore"; 
+import { Skia, Canvas, Path, SkCanvas, PaintStyle, StrokeJoin, Drawing, SkPath, SkPaint, StrokeCap} from "@shopify/react-native-skia";
 import history from "./history";
-import Header from "./Header";
+import Header from "./header";
+import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
+import useWhiteboardStore from "./WhiteboardStore";
 
-//white,dark purple
+
+//how we store paths
+export type Path = { 
+    path?: SkPath;
+    paint?: SkPaint;
+    color?: string;
+}
+
+//creates the paint prop of Path (doesn't seem to transfer properties rn so kinda useless)
+const getPaint = (strokeWidth: number, color: string) =>{
+    const paint = Skia.Paint();
+    paint.setStrokeWidth(strokeWidth);
+    paint.setStrokeMiter(5);
+    paint.setStyle(PaintStyle.Stroke);
+    paint.setStrokeCap(StrokeCap.Round);
+    paint.setStrokeJoin(StrokeJoin.Round);
+    paint.setAntiAlias(true);
+
+    const paintCopy = paint.copy();
+    paintCopy.setColor(Skia.Color(color));
+    return paintCopy;
+};
+
+
 
 const Whiteboard = () => {
-    const touchState = useRef(false); 
-    const canvas = useRef<SkCanvas>();
-    const currentPath = useRef<CurrentPath | null>();
+
+    // we use zustand library so header/history can access these (eventually all states should hopefully be there)
+    const paths = useWhiteboardStore(state => state.completedPaths);
+    const setPaths = useWhiteboardStore(state => state.setPaths);
+    
+    const [strokeWidth, setStrokeWidth] = useState<number>(4);
+    const [color, setColor] = useState<string>('black');
     const {width} = useWindowDimensions();
-    const completedPaths = useWhiteboardStore(state => state.completedPaths);
-    const addPath = useWhiteboardStore(state => state.addPath);
-    const stroke = useWhiteboardStore(state => state.stroke);
     const [canvasHeight, setCanvasHeight] = useState(400);
 
-    const onDrawingActive = useCallback((TouchInfo: ExtendedTouchInfo) => {
-        const {x, y} = TouchInfo;
-        if (!currentPath.current) return;
-        if (touchState.current){
-            currentPath.current.path.lineTo(x, y);
-            if (currentPath.current){
-                canvas.current.drawPath(currentPath.current.path, currentPath.current.paint);
-            }
-        }
 
-    }, []);
-
-    const onDrawingStart = useCallback((TouchInfo: ExtendedTouchInfo) => {
-        if (currentPath.current) return;
-
-        const {x, y} = TouchInfo;
-        currentPath.current = { //make new path
+    // note react native arrays shoudl be changed immtuably which is why we use spread notation
+    const onDrawingStart = (g) => {
+        const newPaths = [...paths];
+        newPaths.push({
             path: Skia.Path.Make(),
-            paint: stroke.copy(),
-        }
-        touchState.current = true;
-        currentPath.current.path.moveTo(x, y);
+            paint: getPaint(strokeWidth, color)
+        })
+        newPaths[paths.length].path.moveTo(g.x, g.y);
+        setPaths(newPaths);
+    } 
 
-        if (currentPath.current){
-            canvas.current?.drawPath(currentPath.current.path, currentPath.current.paint);
-        }
+    const onDrawingActive = (g) => {
+        const newPaths = [...paths];
+        newPaths[paths.length - 1].path.lineTo(g.x, g.y);
+        setPaths(newPaths);
+    } 
+
+    const onDrawingFinished = () => {
+        history.push(paths[paths.length - 1]);
+    } 
+    
 
 
-    }, [stroke]);
 
-
-    const onDraw = useDrawCallback((_canvas, info) => {
-        touchHandler(info.touches);
-
-        if (currentPath.current) {
-            canvas.current?.drawPath(
-              currentPath.current.path,
-              currentPath.current.paint,
-            );
-          }
-      
-          if (!canvas.current) {
-            useWhiteboardStore.getState().setCanvasInfo({
-              width: info.width,
-              height: info.height,
-            });
-            canvas.current = _canvas;
-          }
-        
-
-    }, []);
-
-    const onDrawingFinished = useCallback(() => {
-        updatePaths();
-
-        currentPath.current = null;
-        touchState.current = false;
-
-    }, [completedPaths.length]);  
-
-    const updatePaths = () => {
-        if (!currentPath.current) return;
-
-        history.push(currentPath.current);
-
-        addPath({
-            path: currentPath.current.path.copy(), 
-            paint: currentPath.current.paint.copy(), 
-            color: useWhiteboardStore.getState().color,
-        });
-
-        // console.log(currentPath.current.paint.getStrokeWidth());
-
-        // let updatedPaths = [...completedPaths]; 
-         
-        // updatedPaths.push({
-        //     path: currentPath.current.path.copy(), 
-        //     paint: currentPath.current.paint.copy(), 
-        //     color: useWhiteboardStore.getState().color,
-        // });
-        // // history.push(currentPath.current);
-
-        // console.log("updated paths" + updatedPaths.length);
-
-        // setCompletedPaths(updatedPaths);
-
-        // console.log("completed paths" + completedPaths.length);
-
-    };   
-
-    const touchHandler = useTouchHandler({
-        onActive: onDrawingActive, 
-        onStart: onDrawingStart,   
-        onEnd: onDrawingFinished,
-    });
-
-    const onLayout = (event) => {
-        setCanvasHeight(event.nativeEvent.layout.height);
-    }
+    //touch handler
+    const pan = Gesture.Pan().runOnJS(true)
+        .onStart((g) => { 'worklet'
+            onDrawingStart(g);
+        })
+        .onUpdate((g) => { 'worklet'
+            onDrawingActive(g);
+        })
+        .onEnd((g) => { 'worklet'
+            onDrawingFinished();
+        })
 
     return (
         <SafeAreaView style = {{flex: 1}}>
             <View style = {{backgroundColor: '#45f5f5', flex: 1, alignItems: 'center'}}>
 
-                <Header/>
+                {/* undo redo reset */}
+                <Header/> 
 
-                <View onLayout = {onLayout} style = {{width: width - 24, flexGrow: 4, elevation: 1}}>
-                    <SkiaView onDraw = {onDraw} style = {{height: canvasHeight, width: width - 24, zIndex: 10}}/>
-                    <Canvas style = {{height: canvasHeight, width: width - 24, position: 'absolute'}} >
-                        {completedPaths.map(path => (
-                            <Path path = {path.path} key = {path.path.toSVGString()}
-                            //@ts-ignore
-                            paint={path.paint} style = 'stroke' strokeWidth={path.paint.getStrokeWidth()} strokeJoin = 'round'/>
-                        ))}
+                <GestureHandlerRootView style = {{ flex: 1}}>
+                    <GestureDetector gesture={pan}>
+                        <View style = {{width: width - 24, flexGrow: 4, elevation: 1}}>
+                            <Canvas  style = {{height: canvasHeight, width: width - 24, position: 'absolute'}}  >
+                                {paths?.map((path, i) => (  //takes all the completed paths in the "paths" array and creates them using Path from react native skia
+                                    <Path 
+                                        path = {path.path} 
+                                        key = {i}
+                                        //@ts-ignore
+                                        paint={{current: path.paint}}  //a little broken rn
+                                        style = 'stroke' 
+                                        strokeWidth = {strokeWidth} 
+                                        strokeCap = 'round' //beginning/end of storkes are round
+                                        strokeMiter = {5}
+                                        antiAlias = {true}
+                                        strokeJoin = 'round'/>
+                                ))}
 
-                    </Canvas>  
-   
- 
-                </View>
+                            </Canvas>  
+        
+        
+                        </View>
+                    </GestureDetector>
+                </GestureHandlerRootView>
+             
 
 
 
