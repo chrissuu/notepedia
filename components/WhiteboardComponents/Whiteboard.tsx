@@ -1,11 +1,11 @@
-import React, { useRef, useState, useCallback, useEffect, useMemo} from "react";
-import { useWindowDimensions, LayoutChangeEvent, View, SafeAreaView } from "react-native";
+import React, { useState } from "react";
+import { SafeAreaView, View, useWindowDimensions } from "react-native";
 
-import { Skia, Canvas, Path, SkCanvas, PaintStyle, StrokeJoin, Drawing, SkPath, SkPaint, StrokeCap} from "@shopify/react-native-skia";
-import history from "./history";
-import Header from "./header";
+import { Canvas, PaintStyle, Path, SkPaint, SkPath, Skia, StrokeCap, StrokeJoin } from "@shopify/react-native-skia";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import useWhiteboardStore from "./WhiteboardStore";
+import Header from "./Header";
+import history from "./History";
 
 
 //how we store paths
