@@ -33,21 +33,8 @@ const MyStack = () => {
 }
 const HomeScreen = () => {
     return (
-        //     <Drawer.Navigator
-        //     defaultStatus='open'
-        //     initialRoute='Article'
-        //     screenOptions={{
-        //         drawerType: 'permanent'
-        //     }}>
-        //     <Drawer.Screen
-        //         name="Notebooks"
-        //         component={MyStack}
-                
-        //     />
-
-
-        // </Drawer.Navigator>
-        <TabNavigator />
+     
+        <NotebookTab />
         
     );
 };

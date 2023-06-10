@@ -15,17 +15,55 @@ const CustomHeader = () => {
 };
 
 const NotebookTab = () => {
-    return (<Drawer.Navigator 
+    let whiteboard1 = <Whiteboard identification = '1'/>
+    let whiteboard2 = <Whiteboard identification = '2'/>
+
+
+    return (
+        <Drawer.Navigator 
             defaultStatus='open'
-            initialRoute = 'Article' 
             screenOptions = {{
                 drawerType: 'permanent'}}>
+        
             <Drawer.Screen 
-                name="Notebooks" 
-                component={Whiteboard}
-                options={{ header: () => <CustomHeader /> }}
-            />
+            name = "Chem notebook" 
+            identification = '1' 
+            options={{ header: () => <CustomHeader /> }} 
+            >
+                {(props) => <Whiteboard {...props} />}
+            </Drawer.Screen>
+
+            <Drawer.Screen 
+            name = "Physics notebook" 
+            identification = '2' 
+            options={{ header: () => <CustomHeader /> }} 
+            >
+                {(props) => <Whiteboard {...props} />}
+            </Drawer.Screen>
+
         </Drawer.Navigator>)
 }
 
+const PhysicsNotebookScreen = () => {
+    return (
+        <View><Tab.Navigator>
+        <Tab.Screen
+          name="Whiteboard 1"
+          component={() => <Whiteboard identification='1' />}
+        />
+      </Tab.Navigator></View>
+      
+    );
+  };
+  
+  const ChemistryNotebookScreen = () => {
+    return (
+      <Tab.Navigator>
+        <Tab.Screen
+          name="Whiteboard 2"
+          component={() => <Whiteboard identification='2' />}
+        />
+      </Tab.Navigator>
+    );
+  };
 export default NotebookTab;

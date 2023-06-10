@@ -32,7 +32,7 @@ const getPaint = (strokeWidth: number, color: string) =>{
 
 
 
-const Whiteboard = () => {
+const Whiteboard = (identification: number) => {
 
     // we use zustand library so header/history can access these (eventually all states should hopefully be there)
     const paths = useWhiteboardStore(state => state.completedPaths);
@@ -42,6 +42,7 @@ const Whiteboard = () => {
     const [color, setColor] = useState<string>('black');
     const {width} = useWindowDimensions();
     const [canvasHeight, setCanvasHeight] = useState(400);
+    const thisID = identification;
 
 
     // note react native arrays shoudl be changed immtuably which is why we use spread notation
@@ -90,7 +91,7 @@ const Whiteboard = () => {
                 <GestureHandlerRootView style = {{ flex: 1}}>
                     <GestureDetector gesture={pan}>
                         <View style = {{width: width - 24, flexGrow: 4, elevation: 1}}>
-                            <Canvas  style = {{height: canvasHeight, width: width - 24, position: 'absolute'}}  >
+                            <Canvas style = {{height: canvasHeight, width: width - 24, position: 'absolute'}}  >
                                 {paths?.map((path, i) => (  //takes all the completed paths in the "paths" array and creates them using Path from react native skia
                                     <Path 
                                         path = {path.path} 
@@ -102,19 +103,14 @@ const Whiteboard = () => {
                                         strokeCap = 'round' //beginning/end of storkes are round
                                         strokeMiter = {5}
                                         antiAlias = {true}
-                                        strokeJoin = 'round'/>
+                                        strokeJoin = 'round'
+                                    />
                                 ))}
 
                             </Canvas>  
-        
-        
                         </View>
                     </GestureDetector>
                 </GestureHandlerRootView>
-             
-
-
-
             </View>
 
         </SafeAreaView>

@@ -9,7 +9,7 @@ const history: {
     undoArr: [],
     redoArr: [],
 
-  };
+};
 
 const undo = () => {
     if (history.undoArr.length == 0) return;

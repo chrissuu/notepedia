@@ -1,8 +1,6 @@
 import React from "react";
-import {Text, View, Button, StyleSheet} from 'react-native';
-
-
-import history from './History'
+import { Button, StyleSheet, View } from 'react-native';
+import history from './History';
 import useWhiteboardStore from "./WhiteboardStore";
 
 

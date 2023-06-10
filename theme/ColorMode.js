@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
-import {ThemeContext, ThemeProvider, THEMES} from '../ThemeContext';
+import {ThemeContext, ThemeProvider, THEMES} from './ThemeContext';
 
 //handles light / dark mode
 const RotateColor = () => {

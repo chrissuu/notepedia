@@ -2,7 +2,7 @@ import React, { useState, useContext, useCallback } from "react";
 import { Button, View, StyleSheet } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { NavigationContainer } from "@react-navigation/native";
-import { ThemeContext, THEMES } from "../ThemeContext";
+import { ThemeContext, THEMES } from "../../theme/ThemeContext";
 import Whiteboard from '../WhiteboardComponents/Whiteboard'
 
 function NotebookScreen({ navigation, route }) {
