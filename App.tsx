@@ -9,7 +9,7 @@ export default function App() {
   changeScreenOrientation();
   
   return (
-    <NavigationContainer>
+    <NavigationContainer >
       <AppNavigator />
     </NavigationContainer>
     

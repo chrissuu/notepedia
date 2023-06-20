@@ -13,7 +13,7 @@ const Stack = createNativeStackNavigator();
 export default function AppNavigator() {
   
   return (
-      <NotebookTab/> 
+      <NotebookTab /> 
       // <Whiteboard identification = '1'/>
       
   
