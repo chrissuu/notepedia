@@ -5,6 +5,8 @@ import NotebookDrawer from '../NotebookComponents/Notebook';
 import Whiteboard from '../WhiteboardComponents/Whiteboard';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+import Header from '../WhiteboardComponents/Header';
+
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
@@ -27,7 +29,7 @@ const Page = (props) => {
     </Drawer.Screen>
   )
 }
-
+ 
 const NotebooksHolder = () => {
   return (
     <Drawer.Navigator
@@ -71,6 +73,9 @@ const NotebookTab = () => {
       <Stack.Screen
         name = "Notebooks Screen"
         component = {NotebooksHolder}
+        options={{
+          header: () => <Header />
+        }}
         >
        
       </Stack.Screen>
