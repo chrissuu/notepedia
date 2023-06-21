@@ -74,7 +74,7 @@ const Whiteboard = (identification: number) => {
             <View style = {{backgroundColor: '#45f5f5', flex: 1, alignItems: 'center'}}>
 
                 {/* undo redo reset */}
-                <Header/>
+                {/* <Header/> */}
                 
                 <GestureHandlerRootView style = {{ flex: 1}}>
                     <GestureDetector gesture={pan}>
