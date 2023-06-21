@@ -15,21 +15,6 @@ export type Path = {
     color?: string;
 }
 
-//creates the paint prop of Path (doesn't seem to transfer properties rn so kinda useless)
-const getPaint = (strokeWidth: number, color: string) =>{
-    const paint = Skia.Paint();
-    paint.setStrokeWidth(strokeWidth);
-    paint.setStrokeMiter(5);
-    paint.setStyle(PaintStyle.Stroke);
-    paint.setStrokeCap(StrokeCap.Round);
-    paint.setStrokeJoin(StrokeJoin.Round);
-    paint.setAntiAlias(true);
-
-    const paintCopy = paint.copy();
-    paintCopy.setColor(Skia.Color(color));
-    return paintCopy;
-};
-
 
 
 const Whiteboard = (identification: number) => {
@@ -37,9 +22,12 @@ const Whiteboard = (identification: number) => {
     // we use zustand library so header/history can access these (eventually all states should hopefully be there)
     const paths = useWhiteboardStore(state => state.completedPaths);
     const setPaths = useWhiteboardStore(state => state.setPaths);
+    const strokeWidth = useWhiteboardStore(state => state.strokeWidth);
+    const setStrokeWidth = useWhiteboardStore(state => state.setStrokeWidth)
+    const color = useWhiteboardStore(state => state.color);
+    const setColor = useWhiteboardStore(state => state.setColor);
+    const stroke = useWhiteboardStore(state => state.stroke);
     
-    const [strokeWidth, setStrokeWidth] = useState<number>(4);
-    const [color, setColor] = useState<string>('black');
     const {width} = useWindowDimensions();
     const [canvasHeight, setCanvasHeight] = useState(400);
     const thisID = identification;
@@ -50,7 +38,7 @@ const Whiteboard = (identification: number) => {
         const newPaths = [...paths];
         newPaths.push({
             path: Skia.Path.Make(),
-            paint: getPaint(strokeWidth, color)
+            paint: stroke.copy(),
         })
         newPaths[paths.length].path.moveTo(g.x, g.y);
         setPaths(newPaths);
@@ -86,8 +74,8 @@ const Whiteboard = (identification: number) => {
             <View style = {{backgroundColor: '#45f5f5', flex: 1, alignItems: 'center'}}>
 
                 {/* undo redo reset */}
-                <Header/> 
-
+                <Header/>
+                
                 <GestureHandlerRootView style = {{ flex: 1}}>
                     <GestureDetector gesture={pan}>
                         <View style = {{width: width - 24, flexGrow: 4, elevation: 1}}>

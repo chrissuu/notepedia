@@ -5,11 +5,14 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from '../components/HomeScreenComponents/HomeScreen';
 import Whiteboard from '../components/WhiteboardComponents/Whiteboard';
 import NotebookTab from '../components/HomeScreenComponents/NotebookTab';
+import Whiteboard from '../components/WhiteboardComponents/Whiteboard';
+
 
 import * as ScreenOrientation from 'expo-screen-orientation';
 
 
 const Stack = createNativeStackNavigator();
+
 export default function AppNavigator() {
   
   return (

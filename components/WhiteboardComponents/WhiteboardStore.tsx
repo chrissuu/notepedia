@@ -1,6 +1,6 @@
 import { DrawingInfo, SkPaint, SkPath, Skia, PaintStyle, StrokeCap, StrokeJoin } from '@shopify/react-native-skia';
 import { create } from 'zustand';
-
+import getPaint from './utility';
 
 export type CurrentPath = {
     path?: SkPath;
@@ -19,22 +19,6 @@ interface WhiteboardStore {
     setStroke: (stroke: SkPaint) => void;
 
 }
-
-const getPaint = (strokeWidth: number, color: string) =>{
-    const paint = Skia.Paint();
-    paint.setStrokeWidth(strokeWidth);
-    paint.setStrokeMiter(5);
-    paint.setStyle(PaintStyle.Stroke);
-    paint.setStrokeCap(StrokeCap.Round);
-    paint.setStrokeJoin(StrokeJoin.Round);
-    paint.setAntiAlias(true);
-
-    const paintCopy = paint.copy();
-    paintCopy.setColor(Skia.Color(color));
-
-    // console.log(paintCopy);
-    return paintCopy;
-};
 
 
 
