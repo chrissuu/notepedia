@@ -35,6 +35,7 @@ const Header = () => {
     
     const onStrokeChange = (strokeWidth: number) => {
         setStrokeWidth(strokeWidth);
+        setShowStrokes(false);
         setStroke(getPaint(strokeWidth, currentColor));
     }
 

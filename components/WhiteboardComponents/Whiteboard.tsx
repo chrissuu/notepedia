@@ -85,9 +85,9 @@ const Whiteboard = (identification: number) => {
                                         path = {path.path} 
                                         key = {i}
                                         //@ts-ignore
-                                        paint={{current: path.paint}}  //a little broken rn
+                                        // paint={path.paint}  //a little broken rn
                                         style = 'stroke' 
-                                        strokeWidth = {strokeWidth} 
+                                        strokeWidth = {path.paint.getStrokeWidth()} 
                                         strokeCap = 'round' //beginning/end of storkes are round
                                         strokeMiter = {5}
                                         antiAlias = {true}
