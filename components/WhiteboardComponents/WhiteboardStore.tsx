@@ -17,10 +17,7 @@ interface WhiteboardStore {
     setStrokeWidth: (strokeWidth: number) => void;
     setColor: (color: string) => void;
     setStroke: (stroke: SkPaint) => void;
-
 }
-
-
 
 const useWhiteboardStore = create<WhiteboardStore>((set, get) => ({
     completedPaths: [], 
@@ -41,9 +38,6 @@ const useWhiteboardStore = create<WhiteboardStore>((set, get) => ({
     setStroke: stroke => {
         set({stroke});
     },
-
-
-
 }));
 
 export default useWhiteboardStore;

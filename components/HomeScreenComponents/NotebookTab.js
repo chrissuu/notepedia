@@ -1,12 +1,13 @@
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import React from 'react';
-import { Text, View } from 'react-native';
-import NotebookDrawer from '../NotebookComponents/Notebook';
-import Whiteboard from '../WhiteboardComponents/Whiteboard';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+import React, { useState } from 'react';
+import { Text, TouchableOpacity } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import { DrawerContentScrollView } from '@react-navigation/drawer';
 import Header from '../WhiteboardComponents/Header';
-
+import Whiteboard from '../WhiteboardComponents/Whiteboard';
+import { Button } from 'react-native';
+import { StyleSheet } from 'react-native';
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
@@ -29,8 +30,32 @@ const Page = (props) => {
     </Drawer.Screen>
   )
 }
- 
+const CustomDrawerContent = ({ navigation, pages, addPages }) => {
+  const handlePress = (pageName) => {
+    navigation.navigate(pageName);
+  };
+
+  return (
+    <ScrollView>
+      {pages.map((page) => (
+        <TouchableOpacity title = {page} key={page} onPress={() => handlePress(page)}>
+          <Text>{page}</Text>
+        </TouchableOpacity>
+      ))}
+      <Button title = "Add Pages" onPress ={addPages}/>
+    </ScrollView>
+  );
+};
 const NotebooksHolder = () => {
+  const [pageArray, setPageArray] = useState([]);
+
+  const addPage = () => {
+    const newItem = `Page ${pageArray.length + 1}`;
+    setPageArray([...pageArray, newItem]);
+    console.log(newItem);
+  };
+
+  
   return (
     <Drawer.Navigator
           defaultStatus='open'
@@ -38,29 +63,32 @@ const NotebooksHolder = () => {
             // drawerType: 'permanent',
             header: () => <EmptyHeader />
           }}
+
+          drawerContent={(props) => <CustomDrawerContent {...props} pages = {pageArray} addPages = {addPage}/>}
+          
         >
+           <Drawer.Screen 
+              name = "Default Page"
+              options= {{
+                header:() => <EmptyHeader />
+              }}
+            >
+              {(props) => <Whiteboard {...props} />}
+            </Drawer.Screen>
 
-          <Drawer.Screen
-            name="Page 1"
-            identification='1'
-            options={{
-              header: () => <EmptyHeader />
-            }}
-          >
-            {(props) => <Whiteboard {...props} />}
-          </Drawer.Screen>
+          {pageArray.map((page, index) => (
+            <Drawer.Screen 
+              name = {page} 
+              options= {{
+                header:() => <EmptyHeader />
+              }}
+              key = {index}
+            >
+              {(props) => <Whiteboard {...props} />}
+            </Drawer.Screen>
+          ))}
 
-          <Drawer.Screen
-            name="Page 2"
-            identification='2'
-            options={{
-              header: () => <EmptyHeader />
-            }}
-          >
-            {(props) => <Whiteboard {...props} />}
-          </Drawer.Screen>
-
-        </Drawer.Navigator>
+      </Drawer.Navigator>
   )
 }
 const NotebookTab = () => {
@@ -85,26 +113,14 @@ const NotebookTab = () => {
   )
 }
 
-const PhysicsNotebookScreen = () => {
-  return (
-    <View><Tab.Navigator>
-      <Tab.Screen
-        name="Whiteboard 1"
-        component={() => <Whiteboard identification='1' />}
-      />
-    </Tab.Navigator></View>
-
-  );
-};
-
-const ChemistryNotebookScreen = () => {
-  return (
-    <Tab.Navigator>
-      <Tab.Screen
-        name="Whiteboard 2"
-        component={() => <Whiteboard identification='2' />}
-      />
-    </Tab.Navigator>
-  );
-};
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  buttonContainer: {
+    alignSelf: 'flex-end',
+    margin: 16,
+  },
+});
 export default NotebookTab;
