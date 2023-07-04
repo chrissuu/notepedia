@@ -1,6 +1,9 @@
-import AppNavigator from './nav/AppNavigator';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { NavigationContainer } from '@react-navigation/native';
+
+import AppNavigator from './nav/AppNavigator';
+
+
 export default function App() {
   async function changeScreenOrientation() {
 
@@ -16,4 +19,8 @@ export default function App() {
     
     );
 }
+
+
+
+
 

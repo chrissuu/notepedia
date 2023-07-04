@@ -3,7 +3,7 @@ import { SafeAreaView, View, useWindowDimensions } from "react-native";
 
 import { Canvas, PaintStyle, Path, SkPaint, SkPath, Skia, StrokeCap, StrokeJoin } from "@shopify/react-native-skia";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
-import useWhiteboardStore from "./WhiteboardStore";
+import { useWhiteboardStore } from "./WhiteboardStore";
 import Header from "./Header";
 import history from "./History";
 
@@ -16,21 +16,24 @@ export type Path = {
 }
 
 
-
-const Whiteboard = (identification: number) => {
+//chagne stuff
+const Whiteboard = (props) => {
 
     // we use zustand library so header/history can access these (eventually all states should hopefully be there)
-    const paths = useWhiteboardStore(state => state.completedPaths);
-    const setPaths = useWhiteboardStore(state => state.setPaths);
-    const strokeWidth = useWhiteboardStore(state => state.strokeWidth);
-    const setStrokeWidth = useWhiteboardStore(state => state.setStrokeWidth)
-    const color = useWhiteboardStore(state => state.color);
-    const setColor = useWhiteboardStore(state => state.setColor);
-    const stroke = useWhiteboardStore(state => state.stroke);
+    const paths = useWhiteboardStore(props.id, state => state.paths);
+    const setPaths = useWhiteboardStore(props.id, state => state.setPaths);
+    const strokeWidth = useWhiteboardStore(props.id, state => state.strokeWidth);
+    const setStrokeWidth = useWhiteboardStore(props.id, state => state.setStrokeWidth)
+    const color = useWhiteboardStore(props.id, state => state.color);
+    const setColor = useWhiteboardStore(props.id, state => state.setColor);
+    const stroke = useWhiteboardStore(props.id, state => state.stroke);
+
+    // const {paths, setPaths, strokeWidth, setStrokeWidth, color, setColor, stroke} = useWhiteboardStore();
+
     
     const {width} = useWindowDimensions();
     const [canvasHeight, setCanvasHeight] = useState(400);
-    const thisID = identification;
+    // const thisID = identification;
 
 
     // note react native arrays shoudl be changed immtuably which is why we use spread notation
@@ -70,38 +73,38 @@ const Whiteboard = (identification: number) => {
         })
 
     return (
-        <SafeAreaView style = {{flex: 1}}>
-            <View style = {{backgroundColor: '#45f5f5', flex: 1, alignItems: 'center'}}>
+            <SafeAreaView style = {{flex: 1}}>
+                <View style = {{backgroundColor: '#45f5f5', flex: 1, alignItems: 'center'}}>
 
-                {/* undo redo reset */}
-                {/* <Header/> */}
-                
-                <GestureHandlerRootView style = {{ flex: 1}}>
-                    <GestureDetector gesture={pan}>
-                        <View style = {{width: width - 24, flexGrow: 4, elevation: 1}}>
-                            <Canvas style = {{height: canvasHeight, width: width - 24, position: 'absolute'}}  >
-                                {paths?.map((path, i) => (  //takes all the completed paths in the "paths" array and creates them using Path from react native skia
-                                    <Path 
-                                        path = {path.path} 
-                                        key = {i}
-                                        //@ts-ignore
-                                        // paint={path.paint}  //a little broken rn
-                                        style = 'stroke' 
-                                        strokeWidth = {path.paint.getStrokeWidth()} 
-                                        strokeCap = 'round' //beginning/end of storkes are round
-                                        strokeMiter = {5}
-                                        antiAlias = {true}
-                                        strokeJoin = 'round'
-                                    />
-                                ))}
+                    {/* undo redo reset */}
+                    {/* <Header id = {id}/> */}
+                    
+                    <GestureHandlerRootView style = {{ flex: 1}}>
+                        <GestureDetector gesture={pan}>
+                            <View style = {{width: width - 24, flexGrow: 4, elevation: 1}}>
+                                <Canvas style = {{height: canvasHeight, width: width - 24, position: 'absolute'}}  >
+                                    {paths?.map((path, i) => (  //takes all the completed paths in the "paths" array and creates them using Path from react native skia
+                                        <Path 
+                                            path = {path.path} 
+                                            key = {i}
+                                            //@ts-ignore
+                                            // paint={path.paint}  //a little broken rn
+                                            style = 'stroke' 
+                                            strokeWidth = {path.paint.getStrokeWidth()} 
+                                            strokeCap = 'round' //beginning/end of storkes are round
+                                            strokeMiter = {5}
+                                            antiAlias = {true}
+                                            strokeJoin = 'round'
+                                        />
+                                    ))}
 
-                            </Canvas>  
-                        </View>
-                    </GestureDetector>
-                </GestureHandlerRootView>
-            </View>
+                                </Canvas>  
+                            </View>
+                        </GestureDetector>
+                    </GestureHandlerRootView>
+                </View>
 
-        </SafeAreaView>
+            </SafeAreaView>
     );
 };
 

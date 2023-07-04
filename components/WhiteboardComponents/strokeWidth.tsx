@@ -1,17 +1,19 @@
 import React from "react";
 import { GestureResponderEvent, View } from "react-native";
-import useWhiteboardStore from "./WhiteboardStore";
+import { useWhiteboardStore } from "./WhiteboardStore";
 import { TouchableOpacity } from "react-native";
 
 const Stroke = ({
     onPress, 
     stroke,
+    id, 
 }: {
     onPress: (event: GestureResponderEvent) => void;
     stroke: number;
+    id: number;
 }) => {
     
-    const color = useWhiteboardStore(state => state.color);
+    const color = useWhiteboardStore(id, state => state.color);
 
     return (
         <TouchableOpacity

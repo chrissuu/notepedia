@@ -1,19 +1,19 @@
 import React from "react";
 import { Button, StyleSheet, View } from 'react-native';
-import history from './History';
-import useWhiteboardStore from "./WhiteboardStore";
-import Stroke from "./strokeWidth";
-import getPaint from "./utility";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { useState } from "react";
 
+
+import history from './History';
+import { useWhiteboardStore } from "./WhiteboardStore";
+import Stroke from "./strokeWidth";
+import getPaint from "./utility";
+
 // basically the undo redo resset button as of 6/2/23
-const Header = () => {
-
-
+const Header = (props) => {
     const clear = () => {
         history.clear();
-        useWhiteboardStore.getState().setPaths([]);
+        const setPaths = useWhiteboardStore(props.id, state => state.setPaths);
+        setPaths([]);
         //reset canvas 
     }
 
@@ -26,9 +26,9 @@ const Header = () => {
     }
 
 
-    const setStrokeWidth = useWhiteboardStore(state => state.setStrokeWidth);
-    const setStroke = useWhiteboardStore(state => state.setStroke);
-    const currentColor = useWhiteboardStore(state => state.color);
+    const setStrokeWidth = useWhiteboardStore(props.id, state => state.setStrokeWidth);
+    const setStroke = useWhiteboardStore(props.id, state => state.setStroke);
+    const currentColor = useWhiteboardStore(props.id, state => state.color);
     const [showStrokes, setShowStrokes] = useState(false);
 
     const possibleStrokeWidths = [2, 4, 6, 8, 10];
@@ -62,6 +62,7 @@ const Header = () => {
                     {possibleStrokeWidths.map(strokeWidth => (
                         <Stroke 
                             key = {strokeWidth} 
+                            id = {props.id}
                             stroke = {strokeWidth} 
                             onPress = {() => {onStrokeChange(strokeWidth); console.log("Pressed");}}
                         />
@@ -72,12 +73,12 @@ const Header = () => {
 
             )}
 
-            <Stroke stroke = {5} onPress = {() => {setShowStrokes(!showStrokes); console.log("Pressed")}}></Stroke>
+            <Stroke stroke = {5} id = {props.id} onPress = {() => {setShowStrokes(!showStrokes); console.log("Pressed")}}></Stroke>
         </View>
-
 
     );
 };
+
 
 const styles = StyleSheet.create({
     

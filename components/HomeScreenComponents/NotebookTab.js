@@ -1,11 +1,15 @@
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createDrawerNavigator, DrawerContentScrollView } from '@react-navigation/drawer';
+import React, {useState} from 'react';
+import { Text, View, TouchableOpacity} from 'react-native';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import React, { useState } from 'react';
-import { Text, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { DrawerContentScrollView } from '@react-navigation/drawer';
-import Header from '../WhiteboardComponents/Header';
+
+
+import NotebookDrawer from '../NotebookComponents/Notebook';
 import Whiteboard from '../WhiteboardComponents/Whiteboard';
+import Header from '../WhiteboardComponents/Header';
+import { myProvider } from '../WhiteboardComponents/WhiteboardStore';
 import { Button } from 'react-native';
 import { StyleSheet } from 'react-native';
 const Drawer = createDrawerNavigator();
@@ -57,7 +61,7 @@ const NotebooksHolder = () => {
 
   
   return (
-    <Drawer.Navigator
+      <Drawer.Navigator
           defaultStatus='open'
           screenOptions={{
             // drawerType: 'permanent',
@@ -70,7 +74,7 @@ const NotebooksHolder = () => {
            <Drawer.Screen 
               name = "Default Page"
               options= {{
-                header:() => <EmptyHeader />
+                header:() => <Header />
               }}
             >
               {(props) => <Whiteboard {...props} />}
@@ -80,11 +84,11 @@ const NotebooksHolder = () => {
             <Drawer.Screen 
               name = {page} 
               options= {{
-                header:() => <EmptyHeader />
+                header:() => <Header />
               }}
               key = {index}
             >
-              {(props) => <Whiteboard {...props} />}
+              {(props) => <Whiteboard id = {index} {...props} />}
             </Drawer.Screen>
           ))}
 
@@ -92,9 +96,6 @@ const NotebooksHolder = () => {
   )
 }
 const NotebookTab = () => {
-  let whiteboard1 = <Whiteboard identification='1' />
-  let whiteboard2 = <Whiteboard identification='2' />
-
 
   return (
     <Stack.Navigator>
