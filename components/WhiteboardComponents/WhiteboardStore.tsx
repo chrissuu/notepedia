@@ -3,6 +3,7 @@ import { DrawingInfo, SkPaint, SkPath, Skia, PaintStyle, StrokeCap, StrokeJoin }
 import {  createStore, useStore } from 'zustand';
 
 import getPaint from './utility';
+import { Path } from './Whiteboard';
 
 export type CurrentPath = { //how paths are stored
     path?: SkPath;
@@ -19,6 +20,11 @@ interface WhiteboardStore { //whiteboard props
     setStrokeWidth: (strokeWidth: number) => void;
     setColor: (color: string) => void;
     setStroke: (stroke: SkPaint) => void;
+    undoArr: Path[];
+    setUndoArr: (newUndoArr: Path[]) => void;
+    redoArr: Path[];    
+    setRedoArr: (newUndoArr: Path[]) => void;
+
 }
 
 
@@ -43,6 +49,18 @@ const createWhiteboardStore = () =>
         setStroke: stroke => {
             set({stroke});
         },
+        undoArr: [], 
+        setUndoArr: newUndoArr => {
+            set(() => ({
+                undoArr: newUndoArr,
+            }));
+        },
+        redoArr: [],
+        setRedoArr: newRedoArr => {
+            set(() => ({
+                redoArr: newRedoArr,
+            }));
+        },
     }));
 
 
@@ -59,7 +77,7 @@ const getStore = (key: number) => {
     return store;
 }
 
-const useWhiteboardStore = <T, X>(key: number, selector: (state: WhiteboardStore) => T) => {
+const useWhiteboardStore = <T, X>(key: number, selector?: (state: WhiteboardStore) => T) => {
     return useStore(getStore(key), selector);
 } 
 

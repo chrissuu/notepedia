@@ -5,7 +5,7 @@ import { Canvas, PaintStyle, Path, SkPaint, SkPath, Skia, StrokeCap, StrokeJoin 
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import { useWhiteboardStore } from "./WhiteboardStore";
 import Header from "./Header";
-import history from "./History";
+// import history from "./History";
 
 
 //how we store paths
@@ -27,8 +27,11 @@ const Whiteboard = (props) => {
     const color = useWhiteboardStore(props.id, state => state.color);
     const setColor = useWhiteboardStore(props.id, state => state.setColor);
     const stroke = useWhiteboardStore(props.id, state => state.stroke);
+    const undoArr = useWhiteboardStore(props.id, state => state.undoArr);
+    const setUndoArr = useWhiteboardStore(props.id, state => state.setUndoArr);
 
     // const {paths, setPaths, strokeWidth, setStrokeWidth, color, setColor, stroke} = useWhiteboardStore();
+
 
     
     const {width} = useWindowDimensions();
@@ -54,7 +57,8 @@ const Whiteboard = (props) => {
     } 
 
     const onDrawingFinished = () => {
-        history.push(paths[paths.length - 1]);
+        undoArr.push(paths[paths.length - 1]);
+        setUndoArr([...undoArr]);
     } 
     
 

@@ -15,6 +15,8 @@ import { StyleSheet } from 'react-native';
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
+export let currentPage = 'Page 0';
+
 const EmptyHeader = () => {
   return (
     null
@@ -34,9 +36,12 @@ const Page = (props) => {
     </Drawer.Screen>
   )
 }
+
 const CustomDrawerContent = ({ navigation, pages, addPages }) => {
   const handlePress = (pageName) => {
     navigation.navigate(pageName);
+    currentPage = pageName;
+    console.log(currentPage);
   };
 
   return (
@@ -74,7 +79,7 @@ const NotebooksHolder = () => {
            <Drawer.Screen 
               name = "Default Page"
               options= {{
-                header:() => <Header />
+                header:() => <EmptyHeader />
               }}
             >
               {(props) => <Whiteboard {...props} />}
@@ -84,7 +89,7 @@ const NotebooksHolder = () => {
             <Drawer.Screen 
               name = {page} 
               options= {{
-                header:() => <Header />
+                header:() => <EmptyHeader />
               }}
               key = {index}
             >
@@ -103,7 +108,7 @@ const NotebookTab = () => {
         name = "Notebooks Screen"
         component = {NotebooksHolder}
         options={{
-          header: () => <Header />
+          header: () => <Header/>
         }}
         >
        
@@ -124,4 +129,6 @@ const styles = StyleSheet.create({
     margin: 16,
   },
 });
+
+
 export default NotebookTab;
