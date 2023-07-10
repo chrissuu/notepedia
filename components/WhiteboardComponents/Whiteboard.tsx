@@ -45,7 +45,9 @@ const Whiteboard = (props) => {
         newPaths.push({
             path: Skia.Path.Make(),
             paint: stroke.copy(),
+            color: color,
         })
+        console.log(color);
         newPaths[paths.length].path.moveTo(g.x, g.y);
         setPaths(newPaths);
     } 
@@ -78,10 +80,8 @@ const Whiteboard = (props) => {
 
     return (
             <SafeAreaView style = {{flex: 1}}>
-                <View style = {{backgroundColor: '#45f5f5', flex: 1, alignItems: 'center'}}>
+                <View style = {{backgroundColor: '#b2d8d8', flex: 1, alignItems: 'center'}}>
 
-                    {/* undo redo reset */}
-                    {/* <Header id = {id}/> */}
                     
                     <GestureHandlerRootView style = {{ flex: 1}}>
                         <GestureDetector gesture={pan}>
@@ -95,6 +95,7 @@ const Whiteboard = (props) => {
                                             // paint={path.paint}  //a little broken rn
                                             style = 'stroke' 
                                             strokeWidth = {path.paint.getStrokeWidth()} 
+                                            color = {path.color}
                                             strokeCap = 'round' //beginning/end of storkes are round
                                             strokeMiter = {5}
                                             antiAlias = {true}

@@ -9,12 +9,15 @@ const getPaint = (strokeWidth: number, color: string) =>{
     paint.setStrokeCap(StrokeCap.Round);
     paint.setStrokeJoin(StrokeJoin.Round);
     paint.setAntiAlias(true);
+    paint.setColor(Skia.Color(color));
 
-    const paintCopy = paint.copy();
-    paintCopy.setColor(Skia.Color(color));
-
+    // const paintCopy = paint.copy();
+    // paintCopy.setColor(Skia.Color(color));
+    console.log("a");
+    console.log(paint.getColor());
+    console.log("B");
     // console.log(paintCopy);
-    return paintCopy;
+    return paint;
 };
 
 

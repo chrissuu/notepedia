@@ -3,42 +3,36 @@ import { GestureResponderEvent, View } from "react-native";
 import { useWhiteboardStore } from "./WhiteboardStore";
 import { TouchableOpacity } from "react-native";
 
-const Stroke = ({
+const Color = ({
     onPress, 
-    stroke,
+    color,
     id, 
 }: {
     onPress: (event: GestureResponderEvent) => void;
-    stroke: number;
+    color: string;
     id: number;
 }) => {
     
-    const color = useWhiteboardStore(id, state => state.color);
-
     return (
         <TouchableOpacity
             activeOpacity={ 0.6 }
             onPress={onPress}
             style = {{
-                height: 35, 
-                width: 35, 
+                height: '20%', 
+                width: '20%', 
                 justifyContent: 'center', 
                 alignItems: 'center',
-                backgroundColor: '#cfcfcf'
+                backgroundColor: color,
+                margin: '2%',
 
             }}>
             <View
                 style = {{
-                    width: 25, 
-                    height: stroke, 
-                    backgroundColor: 'black',
-                    borderRadius: 10, 
-                    transform: [
-                        {
-                            rotateZ: '-45deg',
-                        }
-                    ]
-
+                    height: '100%', 
+                    width: '100%', 
+                    borderColor: 'black', 
+                    borderWidth: 1, 
+                    borderStyle: 'solid',
                 }}
             ></View>
 
@@ -48,4 +42,4 @@ const Stroke = ({
 };
 
 
-export default Stroke;
+export default Color;
