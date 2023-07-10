@@ -1,14 +1,12 @@
-import React from "react";
-import { Button, StyleSheet, View, Text } from 'react-native';
-import { useState } from "react";
+import { default as React, useState } from "react";
+import { Button, StyleSheet, Text, View } from 'react-native';
 
 
+import { currentPage } from "../HomeScreenComponents/NotebookTab";
+import Color from "./Color";
 import { useWhiteboardStore } from "./WhiteboardStore";
 import Stroke from "./strokeWidth";
-import Color from "./Color";
 import getPaint from "./utility";
-import { currentPage } from "../HomeScreenComponents/NotebookTab";
-import { set } from "react-native-reanimated";
 
 
 

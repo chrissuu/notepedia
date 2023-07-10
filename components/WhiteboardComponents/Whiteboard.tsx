@@ -35,7 +35,9 @@ const Whiteboard = (props) => {
 
     
     const {width} = useWindowDimensions();
-    const [canvasHeight, setCanvasHeight] = useState(400);
+    const {height} = useWindowDimensions();
+
+    const canvasHeight = height;
     // const thisID = identification;
 
 
@@ -85,7 +87,7 @@ const Whiteboard = (props) => {
                     
                     <GestureHandlerRootView style = {{ flex: 1}}>
                         <GestureDetector gesture={pan}>
-                            <View style = {{width: width - 24, flexGrow: 4, elevation: 1}}>
+                            <View style = {{width: width - 24, elevation: 5}}>
                                 <Canvas style = {{height: canvasHeight, width: width - 24, position: 'absolute'}}  >
                                     {paths?.map((path, i) => (  //takes all the completed paths in the "paths" array and creates them using Path from react native skia
                                         <Path 

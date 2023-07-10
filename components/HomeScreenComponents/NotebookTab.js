@@ -1,17 +1,15 @@
-import { createDrawerNavigator, DrawerContentScrollView } from '@react-navigation/drawer';
-import React, {useState} from 'react';
-import { Text, View, TouchableOpacity} from 'react-native';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
+import React, { useState } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-
-
-import NotebookDrawer from '../NotebookComponents/Notebook';
-import Whiteboard from '../WhiteboardComponents/Whiteboard';
+import  Image from 'react-native/Libraries/Image/Image';
+import { useRef } from 'react';
+import { Modal } from 'react-native';
+import { useWindowDimensions } from 'react-native';
+import { Button, StyleSheet } from 'react-native';
 import Header from '../WhiteboardComponents/Header';
-import { myProvider } from '../WhiteboardComponents/WhiteboardStore';
-import { Button } from 'react-native';
-import { StyleSheet } from 'react-native';
+import Whiteboard from '../WhiteboardComponents/Whiteboard';
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
@@ -37,21 +35,99 @@ const Page = (props) => {
   )
 }
 
+// const DefaultPage = (props) => {
+//   return (
+//     <Drawer.Screen
+//       name = {props.name}
+//       identification = {props.identification}
+//       options = {{
+//         header: () => <EmptyHeader/>
+//       }}
+//     >
+//       {(props) => {
+//         <View>
+//           <Image 
+//             source = {require('../../assets/add-page.png')} 
+//             style={{ width: 2000, height: 2000 }}
+//           />
+//           <Text>
+//             Add a page and get started!
+//           </Text>
+//         </View>
+//       }}
+//     </Drawer.Screen>
+//   )
+// }
+
 const CustomDrawerContent = ({ navigation, pages, addPages }) => {
+  const [currentPageName, setCurrentPageName] = useState('');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const buttonRef = useRef(null);
+
   const handlePress = (pageName) => {
     navigation.navigate(pageName);
     currentPage = pageName;
     console.log(currentPage);
   };
 
+  const handleLongPress = () => {
+    setIsMenuOpen(true);
+  }
+
+  const handleMenuOptionSelect = (option) => {
+    console.log('selected option:', option);
+    setIsMenuOpen(false);
+  }
+
+  const calculateModalPosition = () => {
+    buttonRef.current.measure((x,y,width,height,pageX,pageY) => {
+      setModalPosition({left: pageX, top: pageY + height});
+    });
+  }
+
+  const [modalPosition, setModalPosition] = useState({left:0, top:0});
+
   return (
     <ScrollView>
       {pages.map((page) => (
-        <TouchableOpacity title = {page} key={page} onPress={() => handlePress(page)}>
-          <Text>{page}</Text>
+        <TouchableOpacity 
+          title = {page} 
+          key={page} 
+          onPress={() => handlePress(page)}
+          onLongPress={handleLongPress}
+        >
+          <View ref = {buttonRef}>
+            <Text>{currentPage === page ? currentPage : page}</Text>
+          </View>
         </TouchableOpacity>
       ))}
       <Button title = "Add Pages" onPress ={addPages}/>
+
+      <Modal 
+        visible={isMenuOpen} 
+        transparent ={true}
+        onShow={calculateModalPosition}
+      >
+        <TouchableOpacity 
+          style={styles.modalContainer} 
+          onPress={() => setIsMenuOpen(false)}
+        >
+          <View style={[styles.menuContainer, { left: modalPosition.left, top: modalPosition.top }]}>
+            <View style = {styles.modalView}>
+              <TouchableOpacity style={styles.menuOption} onPress={() => handleMenuOptionSelect('Rename')}>
+                <Text style = {styles.modalText}>Rename</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.menuOption} onPress={() => handleMenuOptionSelect('Delete')}>
+                <Text>Delete</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.menuOption} onPress={() => handleMenuOptionSelect('Favorite')}>
+                <Text>Favorite</Text>
+              </TouchableOpacity>
+            </View>
+              
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </ScrollView>
   );
 };
@@ -64,7 +140,9 @@ const NotebooksHolder = () => {
     console.log(newItem);
   };
 
-  
+  const {width} = useWindowDimensions();
+  let iconWidth = width*0.2;
+
   return (
       <Drawer.Navigator
           defaultStatus='open'
@@ -76,14 +154,29 @@ const NotebooksHolder = () => {
           drawerContent={(props) => <CustomDrawerContent {...props} pages = {pageArray} addPages = {addPage}/>}
           
         >
-           <Drawer.Screen 
-              name = "Default Page"
-              options= {{
-                header:() => <EmptyHeader />
+          <Drawer.Screen
+            name = "Default page"
+            options = {{
+              header: () => <EmptyHeader/>
+            }}
+          >
+              {(props) => {
+                return (
+                <View style = {styles.container}>
+                  <View style = {styles.centeredView}>
+                    <Image 
+                      source = {require('../../assets/add-page.png')} 
+                      style= {{width: iconWidth, height:iconWidth}}
+                    />
+                    <Text>
+                      Add a page and get started!
+                    </Text>
+                  </View>
+                
+                </View>
+                )
               }}
-            >
-              {(props) => <Whiteboard {...props} />}
-            </Drawer.Screen>
+          </Drawer.Screen>
 
           {pageArray.map((page, index) => (
             <Drawer.Screen 
@@ -122,11 +215,54 @@ const NotebookTab = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   buttonContainer: {
     alignSelf: 'flex-end',
     margin: 16,
+  },
+  centeredView: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '20%',
+    height: '20%',
+    backgroundColor: '#f0f0f0',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
   },
 });
 
