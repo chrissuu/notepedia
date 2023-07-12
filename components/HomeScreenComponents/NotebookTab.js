@@ -1,13 +1,11 @@
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import React, { useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { Button, Modal, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import  Image from 'react-native/Libraries/Image/Image';
-import { useRef } from 'react';
-import { Modal } from 'react-native';
-import { useWindowDimensions } from 'react-native';
-import { Button, StyleSheet } from 'react-native';
+import Image from 'react-native/Libraries/Image/Image';
+
 import Header from '../WhiteboardComponents/Header';
 import Whiteboard from '../WhiteboardComponents/Whiteboard';
 const Drawer = createDrawerNavigator();
@@ -132,20 +130,24 @@ const CustomDrawerContent = ({ navigation, pages, addPages }) => {
   );
 };
 const NotebooksHolder = () => {
+  const navigation = useNavigation();
   const [pageArray, setPageArray] = useState([]);
 
   const addPage = () => {
     const newItem = `Page ${pageArray.length + 1}`;
     setPageArray([...pageArray, newItem]);
+    if(pageArray.length === 1) {
+      navigation.navigate("Page 1")
+    }
     console.log(newItem);
   };
 
   const {width} = useWindowDimensions();
-  let iconWidth = width*0.2;
+  let iconWidth = width*0.10;
 
   return (
       <Drawer.Navigator
-          defaultStatus='open'
+          // defaultStatus='open'
           screenOptions={{
             // drawerType: 'permanent',
             header: () => <EmptyHeader />
@@ -164,13 +166,16 @@ const NotebooksHolder = () => {
                 return (
                 <View style = {styles.container}>
                   <View style = {styles.centeredView}>
-                    <Image 
-                      source = {require('../../assets/add-page.png')} 
-                      style= {{width: iconWidth, height:iconWidth}}
-                    />
-                    <Text>
+                    <TouchableOpacity onPress = {addPage}>
+                      <Image
+                      source = {require('../../assets/plus.png')} 
+                      style= {{width: iconWidth, height:iconWidth, tintColor:'#717c7d'}}
+                      />
+                    </TouchableOpacity>
+                    
+                    {/* <Text>
                       Add a page and get started!
-                    </Text>
+                    </Text> */}
                   </View>
                 
                 </View>
@@ -217,6 +222,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    // tintColor: '#717c7d'
   },
   buttonContainer: {
     alignSelf: 'flex-end',
@@ -227,7 +233,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '20%',
     height: '20%',
-    backgroundColor: '#f0f0f0',
+    // backgroundColor: '#f0f0f0',
+    // tintColor: '#717c7d'
   },
   modalView: {
     margin: 20,
