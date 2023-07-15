@@ -13,7 +13,7 @@ import getPaint from "./utility";
 // basically the undo redo resset button as of 6/2/23
 const Header = (props) => {
 
-    const id = Number(currentPage.slice(5)) - 1; //current page - fix require cycle
+    const id = Number(currentPage.slice(5))-1; //current page - fix require cycle
 
 
     const undoArr = useWhiteboardStore(id, state => state.undoArr);

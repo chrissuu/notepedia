@@ -3,9 +3,9 @@ import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useRef, useState } from 'react';
 import { Button, Modal, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Image from 'react-native/Libraries/Image/Image';
-
+import { Alert } from 'react-native';
 import Header from '../WhiteboardComponents/Header';
 import Whiteboard from '../WhiteboardComponents/Whiteboard';
 const Drawer = createDrawerNavigator();
@@ -74,6 +74,10 @@ const CustomDrawerContent = ({ navigation, pages, addPages }) => {
 
   const handleMenuOptionSelect = (option) => {
     console.log('selected option:', option);
+    if(option === 'Rename'){ 
+      let newName = Alert.prompt("Enter a new name for the page.");
+      setCurrentPageName(newName);
+    }
     setIsMenuOpen(false);
   }
 
@@ -106,20 +110,36 @@ const CustomDrawerContent = ({ navigation, pages, addPages }) => {
         transparent ={true}
         onShow={calculateModalPosition}
       >
-        <TouchableOpacity 
-          style={styles.modalContainer} 
+        <TouchableOpacity
           onPress={() => setIsMenuOpen(false)}
+          activeOpacity={1}
         >
-          <View style={[styles.menuContainer, { left: modalPosition.left, top: modalPosition.top }]}>
-            <View style = {styles.modalView}>
-              <TouchableOpacity style={styles.menuOption} onPress={() => handleMenuOptionSelect('Rename')}>
+          <View 
+            style={{
+              width: 200,
+              left: modalPosition.left, 
+              top: modalPosition.top 
+            }}
+          >
+            <View 
+              style = {styles.modalView}
+            >
+              <TouchableOpacity 
+                onPress={() => handleMenuOptionSelect('Favorite')}
+              >
+                <Text>Favorite</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                onPress={() => handleMenuOptionSelect('Rename')}
+              >
                 <Text style = {styles.modalText}>Rename</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.menuOption} onPress={() => handleMenuOptionSelect('Delete')}>
+
+              <TouchableOpacity 
+                onPress={() => handleMenuOptionSelect('Delete')}
+              >
                 <Text>Delete</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.menuOption} onPress={() => handleMenuOptionSelect('Favorite')}>
-                <Text>Favorite</Text>
               </TouchableOpacity>
             </View>
               
@@ -129,18 +149,19 @@ const CustomDrawerContent = ({ navigation, pages, addPages }) => {
     </ScrollView>
   );
 };
-const NotebooksHolder = () => {
-  const navigation = useNavigation();
+const PagesHolder = ({navigation}) => {
   const [pageArray, setPageArray] = useState([]);
 
   const addPage = () => {
     const newItem = `Page ${pageArray.length + 1}`;
     setPageArray([...pageArray, newItem]);
-    if(pageArray.length === 1) {
-      navigation.navigate("Page 1")
-    }
     console.log(newItem);
   };
+
+  const addInitialPage = () => {
+    setPageArray([...pageArray, "Page 1"]);
+    navigation.navigate("Page 1");
+  }
 
   const {width} = useWindowDimensions();
   let iconWidth = width*0.10;
@@ -152,9 +173,7 @@ const NotebooksHolder = () => {
             // drawerType: 'permanent',
             header: () => <EmptyHeader />
           }}
-
           drawerContent={(props) => <CustomDrawerContent {...props} pages = {pageArray} addPages = {addPage}/>}
-          
         >
           <Drawer.Screen
             name = "Default page"
@@ -166,7 +185,7 @@ const NotebooksHolder = () => {
                 return (
                 <View style = {styles.container}>
                   <View style = {styles.centeredView}>
-                    <TouchableOpacity onPress = {addPage}>
+                    <TouchableOpacity onPress = {addInitialPage}>
                       <Image
                       source = {require('../../assets/plus.png')} 
                       style= {{width: iconWidth, height:iconWidth, tintColor:'#717c7d'}}
@@ -176,25 +195,32 @@ const NotebooksHolder = () => {
                     {/* <Text>
                       Add a page and get started!
                     </Text> */}
-                  </View>
-                
+                  </View> 
                 </View>
                 )
               }}
           </Drawer.Screen>
-
-          {pageArray.map((page, index) => (
+          <Drawer.Screen
+            name = "Page 1"
+            options= {{
+              header:() => <EmptyHeader />
+            }}
+            key = {-1}
+          >
+              {(props) => <Whiteboard id = {-1} {...props} />}
+          </Drawer.Screen>
+          {([...pageArray].filter((e) => e!=="Page 1")).map((page, index) => (
             <Drawer.Screen 
               name = {page} 
               options= {{
                 header:() => <EmptyHeader />
               }}
               key = {index}
+              //hash by date+time? 
             >
               {(props) => <Whiteboard id = {index} {...props} />}
             </Drawer.Screen>
           ))}
-
       </Drawer.Navigator>
   )
 }
@@ -204,14 +230,12 @@ const NotebookTab = () => {
     <Stack.Navigator>
       <Stack.Screen
         name = "Notebooks Screen"
-        component = {NotebooksHolder}
+        component = {PagesHolder}
         options={{
           header: () => <Header/>
         }}
-        >
-       
+        >  
       </Stack.Screen>
-
     </Stack.Navigator>
 
   )
