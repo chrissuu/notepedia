@@ -10,7 +10,7 @@ const Stroke = ({
 }: {
     onPress: (event: GestureResponderEvent) => void;
     stroke: number;
-    id: number;
+    id: string;
 }) => {
     
     const color = useWhiteboardStore(id, state => state.color);

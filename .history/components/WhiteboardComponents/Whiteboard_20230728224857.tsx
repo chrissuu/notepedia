@@ -64,7 +64,14 @@ const Whiteboard = (props) => {
     } 
 
     const onDrawingFinished = () => {
-        setFinalPath(finalPath + paths[paths.length - 1].path.toSVGString());
+        // if (paths.length - 1 == 0){
+        //     setFinalPath(paths[paths.length - 1].path);
+        // }
+        // else{
+        //     // setFinalPath(Skia.Path.MakeFromOp(finalPath, paths[paths.length - 1].path, PathOp.Union));
+            setFinalPath(finalPath + paths[paths.length - 1].path.toSVGString());
+        // }
+        // console.log(finalPath.toSVGString());
         undoArr.push(paths[paths.length - 1]);
         setUndoArr([...undoArr]);
     } 
@@ -77,8 +84,8 @@ const Whiteboard = (props) => {
             color: color,
         })
         newPaths[paths.length].path.moveTo(g.x, g.y);
-        newPaths[paths.length].path.lineTo(g.x + 0.5, g.y + 0.5);
-        setFinalPath(finalPath + `M${g.x} ${g.y}` + `L${g.x + 0.5} ${g.y + 0.5}`);
+        newPaths[paths.length].path.lineTo(g.x + 0.1, g.y + 0.1);
+        setFinalPath(finalPath + `M ${g.x} ${g.y}` + `L ${g.x + 0.1} ${g.y + 0.1}`);
         undoArr.push(newPaths[paths.length]);
         setPaths(newPaths); 
         setUndoArr([...undoArr]);
@@ -115,31 +122,29 @@ const Whiteboard = (props) => {
                         <GestureDetector gesture={composed}>
                             <View style = {{width: width - 24, elevation: 5}}>
                                 <Canvas style = {{height: canvasHeight, width: width - 24, position: 'absolute'}}  >
-                                    { paths.length > 0 && (                                            
-                                            <Path 
-                                                path = {Skia.Path.MakeFromSVGString(finalPath)} 
-                                                key = {3123}
-                                                style = 'stroke' 
-                                                strokeWidth = {3}
-                                                color = 'black'
-                                                strokeCap = 'round' //beginning/end of storkes are round
-                                                strokeMiter = {5}
-                                                antiAlias = {true}
-                                                strokeJoin = 'round'
-                                            />
-                                    )}
-                                    { paths.length > 0 && (                                            
-                                            <Path 
-                                                path = {paths[paths.length - 1].path} 
-                                                key = {1}
-                                                style = 'stroke' 
-                                                strokeWidth = {paths[paths.length - 1].paint.getStrokeWidth()}
-                                                color = {paths[paths.length - 1].color}
-                                                strokeCap = 'round' //beginning/end of storkes are round
-                                                strokeMiter = {5}
-                                                antiAlias = {true}
-                                                strokeJoin = 'round'
-                                            />
+                                        <Path 
+                                            path = {paths[paths.length - 1].p} 
+                                            key = {i}
+                                            style = 'stroke' 
+                                            strokeWidth = {path.paint.getStrokeWidth()} 
+                                            color = {path.color}
+                                            strokeCap = 'round' //beginning/end of storkes are round
+                                            strokeMiter = {5}
+                                            antiAlias = {true}
+                                            strokeJoin = 'round'
+                                        />
+                                    { paths.length > 0 && (
+                                        <Path 
+                                            path = {Skia.Path.MakeFromSVGString(finalPath)} 
+                                            key = {3123}
+                                            style = 'stroke' 
+                                            strokeWidth = {3}
+                                            color = 'black'
+                                            strokeCap = 'round' //beginning/end of storkes are round
+                                            strokeMiter = {5}
+                                            antiAlias = {true}
+                                            strokeJoin = 'round'
+                                        />
                                     )}
 
                                 </Canvas>  

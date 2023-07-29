@@ -6,7 +6,7 @@ import Color from "./Color";
 import { useWhiteboardStore } from "./WhiteboardStore";
 import Stroke from "./strokeWidth";
 import getPaint from "./utility";
-import { currentPage } from "./utility";
+import { currentPage } from "./CurrentPage";
 
 
 // basically the undo redo resset button as of 6/2/23
@@ -26,7 +26,6 @@ const Header = (props) => {
         setUndoArr([]);
         setRedoArr([]);
         setPaths([]);
-        setFinalPath("");
     }
 
     const undo = () => {
@@ -38,7 +37,7 @@ const Header = (props) => {
         redoArr.push(lastPath);
         setRedoArr([...redoArr]);
         setPaths([...undoArr]);
-        setFinalPath(finalPath.slice(0, -1 * lastPath.path.toSVGString().length));
+        // setFinalPath(finalPath.slice(0, finalPath.length - lastPath.path.toSVGString().length));
     }   
 
     const redo = () => {
@@ -50,7 +49,6 @@ const Header = (props) => {
         undoArr.push(lastPath);
         setUndoArr([...undoArr]);
         setPaths([...undoArr]);
-        setFinalPath(finalPath + lastPath.path.toSVGString());
     }
 
     const currentColor = useWhiteboardStore(id, state => state.color);

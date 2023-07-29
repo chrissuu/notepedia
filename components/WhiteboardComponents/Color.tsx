@@ -10,7 +10,7 @@ const Color = ({
 }: {
     onPress: (event: GestureResponderEvent) => void;
     color: string;
-    id: number;
+    id: string;
 }) => {
     
     return (

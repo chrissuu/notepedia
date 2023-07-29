@@ -1,6 +1,7 @@
 import { DrawingInfo, SkPaint, SkPath, Skia, PaintStyle, StrokeCap, StrokeJoin } from '@shopify/react-native-skia';
 
 
+
 const getPaint = (strokeWidth: number, color: string) =>{
     const paint = Skia.Paint();
     paint.setStrokeWidth(strokeWidth);
@@ -9,16 +10,22 @@ const getPaint = (strokeWidth: number, color: string) =>{
     paint.setStrokeCap(StrokeCap.Round);
     paint.setStrokeJoin(StrokeJoin.Round);
     paint.setAntiAlias(true);
-    paint.setColor(Skia.Color(color));
-
-    // const paintCopy = paint.copy();
-    // paintCopy.setColor(Skia.Color(color));
-    console.log("a");
-    console.log(paint.getColor());
-    console.log("B");
+    
+    const paintCopy = paint.copy();
+    paintCopy.setColor(Skia.Color(color));
     // console.log(paintCopy);
-    return paint;
+    return paintCopy;
 };
+
+let initialPageName: string = "Page 1";
+let currentPage = initialPageName;
+
+const setCurrentPage = (currPage: string) => {
+    currentPage = currPage;
+}
+
+
+export {currentPage, setCurrentPage};
 
 
 export default getPaint;

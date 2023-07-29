@@ -6,12 +6,13 @@ import { Button, Modal, StyleSheet, Text, TouchableOpacity, View, useWindowDimen
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Image from 'react-native/Libraries/Image/Image';
 import { Alert } from 'react-native';
+
+
 import Header from '../WhiteboardComponents/Header';
 import Whiteboard from '../WhiteboardComponents/Whiteboard';
+import { currentPage, setCurrentPage } from '../WhiteboardComponents/utility';
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
-
-export let currentPage = 'Page 0';
 
 const EmptyHeader = () => {
   return (
@@ -64,8 +65,8 @@ const CustomDrawerContent = ({ navigation, pages, addPages }) => {
 
   const handlePress = (pageName) => {
     navigation.navigate(pageName);
-    currentPage = pageName;
-    console.log(currentPage);
+    console.log(pageName);
+    setCurrentPage(pageName);
   };
 
   const handleLongPress = () => {
@@ -156,6 +157,7 @@ const PagesHolder = ({navigation}) => {
     const newItem = `Page ${pageArray.length + 1}`;
     setPageArray([...pageArray, newItem]);
     console.log(newItem);
+    setCurrentPage(newItem);
   };
 
   const addInitialPage = () => {
