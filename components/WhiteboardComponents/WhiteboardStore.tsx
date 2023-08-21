@@ -24,9 +24,10 @@ interface WhiteboardStore { //whiteboard props
     setUndoArr: (newUndoArr: Path[]) => void;
     redoArr: Path[];    
     setRedoArr: (newUndoArr: Path[]) => void;
-    finalPath: string;
-    setFinalPath: (finalPath: string) => void;
-
+    finalPath: [string, number][];
+    setFinalPath: (idx: number, newPath: string) => void;
+    eraseValue: boolean;
+    setEraseValue: (eraseValue: boolean) => void;
 
 }
 
@@ -40,9 +41,9 @@ const createWhiteboardStore =
                 paths: newCompletedPaths,
             }));
         },
-        strokeWidth: 3,    
-        color: 'black', 
-        stroke: getPaint(3, 'black'), 
+        strokeWidth: 4,    
+        color: "#000000", 
+        stroke: getPaint(4, '#000000'), 
         setStrokeWidth: strokeWidth => {
             set({strokeWidth});
         },
@@ -64,13 +65,16 @@ const createWhiteboardStore =
                 redoArr: newRedoArr,
             }));
         },
-        // finalPath: SkPath, 
-        // setFinalPath: newFinalPath => {
-        //     set({newFInalPath});
-        // }
-        finalPath: "",
-        setFinalPath: finalPath => {
-            set({finalPath});
+        finalPath: Array<[string, number]>(85).fill(["", -1]),
+        setFinalPath: (idx, newPath) => {
+            const tempPath: [string, number] = [newPath, idx];
+            set((state) => ({
+                finalPath: [...state.finalPath.slice(0, idx), tempPath, ...state.finalPath.slice(idx + 1)]
+            }));
+        },
+        eraseValue: false,
+        setEraseValue : eraseValue => {
+            set({eraseValue});
         }
     }));
 

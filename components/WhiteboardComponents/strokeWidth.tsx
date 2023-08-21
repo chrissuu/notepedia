@@ -24,7 +24,7 @@ const Stroke = ({
                 width: 35, 
                 justifyContent: 'center', 
                 alignItems: 'center',
-                backgroundColor: '#cfcfcf'
+                backgroundColor: '#fffff'
 
             }}>
             <View

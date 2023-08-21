@@ -5,8 +5,7 @@ import { Button, StyleSheet, Text, View } from 'react-native';
 import Color from "./Color";
 import { useWhiteboardStore } from "./WhiteboardStore";
 import Stroke from "./strokeWidth";
-import getPaint from "./utility";
-import { currentPage } from "./utility";
+import getPaint, {currentPage, possibleColors, possibleStrokeWidths, stroketoIndex, whiteboardbackgroundcolor} from "./utility";
 
 
 // basically the undo redo resset button as of 6/2/23
@@ -26,7 +25,11 @@ const Header = (props) => {
         setUndoArr([]);
         setRedoArr([]);
         setPaths([]);
-        setFinalPath("");
+        for(let i = 0; i < 85; i++){
+            setFinalPath(i, "");
+        }
+        setEraseValue(false);
+
     }
 
     const undo = () => {
@@ -38,7 +41,10 @@ const Header = (props) => {
         redoArr.push(lastPath);
         setRedoArr([...redoArr]);
         setPaths([...undoArr]);
-        setFinalPath(finalPath.slice(0, -1 * lastPath.path.toSVGString().length));
+        const idx = stroketoIndex(lastPath.color,lastPath.paint.getStrokeWidth());
+        setFinalPath(idx, finalPath[idx][0].slice(0, -1 * lastPath.path.toSVGString().length));
+        setEraseValue(false);
+
     }   
 
     const redo = () => {
@@ -50,7 +56,10 @@ const Header = (props) => {
         undoArr.push(lastPath);
         setUndoArr([...undoArr]);
         setPaths([...undoArr]);
-        setFinalPath(finalPath + lastPath.path.toSVGString());
+        const idx = stroketoIndex(lastPath.color,lastPath.paint.getStrokeWidth());
+        setFinalPath(idx, finalPath[idx][0] + lastPath.path.toSVGString());
+        setEraseValue(false);
+
     }
 
     const currentColor = useWhiteboardStore(id, state => state.color);
@@ -61,46 +70,39 @@ const Header = (props) => {
     const setStroke = useWhiteboardStore(id, state => state.setStroke);
     const stroke = useWhiteboardStore(id, state => state.stroke);
     const [showStrokes, setShowStrokes] = useState(false);
-
-    const possibleStrokeWidths = [2, 4, 6, 8, 10];
     
     const onStrokeChange = (strokeWidth: number) => {
         setStrokeWidth(strokeWidth);
         setShowStrokes(false);
         setStroke(getPaint(strokeWidth, currentColor));
-        // const stroke = useWhiteboardStore(id, state => state.stroke);
-        // console.log(stroke.getStrokeWidth());
+        setEraseValue(false);
+
     }
 
     // colors
-
     const [showColors, setShowColors] = useState(false);
     const setColor = useWhiteboardStore(id, state => state.setColor);
-    const possibleColors = ['#FFFFFF', '#C0C0C0', '#808080', '#000000',
-                            '#FF0000', '#800000', '#FFFF00', '#808000', 
-                            '#00FF00','#008000', '#00FFFF', '#008080', 
-                            '#0000FF', '#000080', '#FF00FF', '#800080'];
-
-
-
     const onColorChange = (color: string) => {
         setColor(color);
         setShowColors(false);
         setStroke(getPaint(currentStrokeWidth, color));
+        setEraseValue(false);
     }
 
-
-    //color picker
-    const [showColorPicker, setShowColorPicker] = useState(false);
-
-    const [hue, setHue] = useState(0);
-    const [sat, setSat] = useState(0);
-    const [val, setVal] = useState(0);
-
-    const setSatVal = ({sat, val}) => {
-        setSat(sat);
-        setVal(val);
+    const eraseValue = useWhiteboardStore(id, state => state.eraseValue);
+    const setEraseValue = useWhiteboardStore(id, state => state.setEraseValue);
+    const onEraseChange = () => {
+        setColor(whiteboardbackgroundcolor);
+        setStroke(getPaint(currentStrokeWidth, whiteboardbackgroundcolor));
+        if (eraseValue == true){
+            setColor('#000000');
+            setStroke(getPaint(currentStrokeWidth, '#000000'));
+        }
+        setEraseValue(!eraseValue);
     }
+
+    
+
 
 
     return (
@@ -135,12 +137,19 @@ const Header = (props) => {
 
             {/* colors */}
             <Button title = "Colors" onPress = {() => {setShowColors(!showColors); setShowStrokes(false)}}/>
+            <Button title = "Eraser" onPress = {() => {onEraseChange()}}/>
 
             {showColors && (
-                <View style = {[styles.colorContainer]}>
-                    <Text style = {{top: 10, left: 10, fontSize: 17}}>Basic Colors</Text>
-                    <View style = {[styles.color]}>
-                    {possibleColors.map(color => (
+                <View 
+                style = {[
+                    styles.color, 
+                    {
+                        top: 40, 
+                        left: 200,
+                        position: 'absolute',
+                    }
+                ]}>
+                    {possibleColors.filter(function(e){return e != whiteboardbackgroundcolor}).map(color => (
                         <Color 
                             key = {color}
                             id = {id}
@@ -148,10 +157,6 @@ const Header = (props) => {
                             onPress = {() => {onColorChange(color)}}
                         />
                     ))}
-                    </View>
-                    <View style = {{top: -10}}>
-                        <Button title = "More Colors" onPress = {() => {setShowColorPicker(!false)}}/>
-                    </View>
                 </View>
             )}
 
@@ -175,22 +180,16 @@ const styles = StyleSheet.create({
     strokeWidth: {
         backgroundColor: '#ffffff', 
         height: 50, 
-        width: 300, 
+        width: 200, 
         borderRadius: 100, 
         flexDirection: 'row', 
         paddingHorizontal: 12, 
         justifyContent: 'center', 
         alignItems: 'center', 
     },
-    colorContainer: {
-        top: 40,
-        left: -130, 
-        backgroundColor: '#ffffff', 
-        height: 200, 
-        width: 150, 
-        borderRadius: 20,
-    },
     color: {
+        backgroundColor: '#ffffff',
+        borderRadius: 20,
         height: 150,
         width: 150,
         flexDirection: 'column-reverse', 
