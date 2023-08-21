@@ -226,22 +226,7 @@ const PagesHolder = ({navigation}) => {
       </Drawer.Navigator>
   )
 }
-const NotebookTab = () => {
 
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name = "Notebooks Screen"
-        component = {PagesHolder}
-        options={{
-          header: () => <Header/>
-        }}
-        >  
-      </Stack.Screen>
-    </Stack.Navigator>
-
-  )
-}
 
 const styles = StyleSheet.create({
   container: {
@@ -297,7 +282,9 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: 'center',
   },
+
+  
 });
 
 
-export default NotebookTab;
+export default PagesHolder;
