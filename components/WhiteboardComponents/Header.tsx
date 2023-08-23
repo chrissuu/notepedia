@@ -11,7 +11,7 @@ import getPaint, {currentPage, possibleColors, possibleStrokeWidths, stroketoInd
 // basically the undo redo resset button as of 6/2/23
 const Header = (props) => {
 
-    const id = currentPage
+    const id = currentPage; // header and whitebaord refer to different stores
 
     const undoArr = useWhiteboardStore(id, state => state.undoArr);
     const redoArr = useWhiteboardStore(id, state => state.redoArr);

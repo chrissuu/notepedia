@@ -209,9 +209,9 @@ const PagesHolder = ({navigation}) => {
             }}
             key = {-1}
           >
-              {(props) => <Whiteboard id = {-1} {...props} />}
+              {(props) => <Whiteboard id = {"Page 1"} {...props} />} 
           </Drawer.Screen>
-          {([...pageArray].filter((e) => e!=="Page 1")).map((page, index) => (
+          {([...pageArray].filter(function(e){return e != "Page 1"})).map((page, index) => (
             <Drawer.Screen 
               name = {page} 
               options= {{
@@ -220,7 +220,7 @@ const PagesHolder = ({navigation}) => {
               key = {index}
               //hash by date+time? 
             >
-              {(props) => <Whiteboard id = {index} {...props} />}
+              {(props) => <Whiteboard id = {page} {...props} />}
             </Drawer.Screen>
           ))}
       </Drawer.Navigator>

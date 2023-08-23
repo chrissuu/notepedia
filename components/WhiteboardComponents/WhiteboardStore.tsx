@@ -33,13 +33,14 @@ interface WhiteboardStore { //whiteboard props
 
 
 
-const createWhiteboardStore = 
+const createWhiteboardStore = () => 
     createStore<WhiteboardStore>((set, get) => ({
         paths: [], 
         setPaths: newCompletedPaths => {
             set(() => ({
                 paths: newCompletedPaths,
             }));
+
         },
         strokeWidth: 4,    
         color: "#000000", 
@@ -71,6 +72,7 @@ const createWhiteboardStore =
             set((state) => ({
                 finalPath: [...state.finalPath.slice(0, idx), tempPath, ...state.finalPath.slice(idx + 1)]
             }));
+
         },
         eraseValue: false,
         setEraseValue : eraseValue => {
@@ -85,12 +87,13 @@ const stores = {};
 const getStore = (key: string) => {
     let store = stores[key];
     if (!store){
-        store = stores[key] = createWhiteboardStore;
+        store = stores[key] = createWhiteboardStore();
     }
     return store;
 }
 
-const useWhiteboardStore = <T, X>(key: string, selector?: (state: WhiteboardStore) => T) => {
+const useWhiteboardStore = <T, X>(key: string, selector?: (state: WhiteboardStore) => T, idk?: number) => {
+
     return useStore(getStore(key), selector);
 } 
 

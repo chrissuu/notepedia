@@ -3,8 +3,8 @@ import { SafeAreaView, View, useWindowDimensions } from "react-native";
 
 import { Canvas, PaintStyle, Path, SkPaint, SkPath, Skia, StrokeCap, StrokeJoin, PathOp} from "@shopify/react-native-skia";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
-import { useWhiteboardStore } from "./WhiteboardStore";
-import { stroketoIndex, possibleColors, whiteboardbackgroundcolor, eraseWidthEnhancer} from "./utility";
+import { useWhiteboardStore, stores } from "./WhiteboardStore";
+import { stroketoIndex, possibleColors, whiteboardbackgroundcolor, eraseWidthEnhancer, currentPage} from "./utility";
 
 
 export type Path = { 
@@ -16,17 +16,23 @@ export type Path = {
 
 const Whiteboard = (props) => {
 
-    const paths = useWhiteboardStore(props.id, state => state.paths);
-    const setPaths = useWhiteboardStore(props.id, state => state.setPaths);
-    const color = useWhiteboardStore(props.id, state => state.color);
-    const stroke = useWhiteboardStore(props.id, state => state.stroke);
-    const undoArr = useWhiteboardStore(props.id, state => state.undoArr);
-    const setUndoArr = useWhiteboardStore(props.id, state => state.setUndoArr);
-    const finalPath = useWhiteboardStore(props.id, state => state.finalPath);
-    const setFinalPath = useWhiteboardStore(props.id, state => state.setFinalPath);
-    const eraseValue = useWhiteboardStore(props.id, state => state.eraseValue);
+    // console.log(props.id);
+    // console.log(stores);
+
+    const id = currentPage;
 
     
+    const paths = useWhiteboardStore(id, state => state.paths);
+    const setPaths = useWhiteboardStore(id, state => state.setPaths);
+    const color = useWhiteboardStore(id, state => state.color);
+    const stroke = useWhiteboardStore(id, state => state.stroke);
+    const undoArr = useWhiteboardStore(id, state => state.undoArr);
+    const setUndoArr = useWhiteboardStore(id, state => state.setUndoArr);
+    const finalPath = useWhiteboardStore(id, state => state.finalPath);
+    const setFinalPath = useWhiteboardStore(id, state => state.setFinalPath);
+    const eraseValue = useWhiteboardStore(id, state => state.eraseValue);
+
+
     const {width} = useWindowDimensions();
     const {height} = useWindowDimensions();
 
@@ -39,7 +45,6 @@ const Whiteboard = (props) => {
             paint: stroke.copy(),
             color: color,
         })
-        console.log(color);
         newPaths[paths.length].path.moveTo(g.x, g.y);
         setPaths(newPaths);
     } 
@@ -55,6 +60,7 @@ const Whiteboard = (props) => {
         setUndoArr([...undoArr]);
     } 
 
+
     const onDrawTap = (g) => {
         const newPaths = [...paths];
         newPaths.push({
@@ -68,8 +74,12 @@ const Whiteboard = (props) => {
         const idx = stroketoIndex(paths[paths.length - 1].color, paths[paths.length - 1].paint.getStrokeWidth());
         setFinalPath(idx, finalPath[idx][0] + `M${g.x} ${g.y}` + `L${g.x + 0.5} ${g.y + 0.5}`);
         undoArr.push(newPaths[paths.length]);
+
+
+
         setPaths(newPaths); 
         setUndoArr([...undoArr]);
+    
     }
 
 
